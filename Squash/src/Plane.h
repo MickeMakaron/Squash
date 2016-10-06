@@ -12,13 +12,12 @@ public:
 	Plane(const sf::Vector3f& normal, const sf::Vector3f& point);
 	~Plane();
 
-
+	const sf::Vector3f& getNormal() const;
+	float getD() const;
 
 private:
 	sf::Vector3f	m_Normal;
 	float			m_D;
-
-
 };
 
 #endif //PLANE
