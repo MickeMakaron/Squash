@@ -22,4 +22,6 @@ float length(const sf::Vector3f& v);
 sf::Vector2f normalize(const sf::Vector2f& v);
 sf::Vector3f normalize(const sf::Vector3f& v);
 
+sf::Vector2f isometricProjection(const sf::Vector3f& v);
+
 #endif //COMMON_MATH

@@ -52,3 +52,15 @@ sf::Vector3f normalize(const sf::Vector3f& v)
 	sf::Vector3f result = v / length(v);
 	return result;
 }
+
+sf::Vector2f isometricProjection(const sf::Vector3f& v)
+{
+	sf::Vector2f result;
+
+	result.x = (2.f * v.x + 2.f * v.y            );
+	result.y = (	  v.x -		  v.y - 2.f * v.z);
+
+	result *= 60.f; // <-- TILE SIZE should perhaps be a constant
+
+	return result;
+}
