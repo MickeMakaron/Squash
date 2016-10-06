@@ -32,5 +32,5 @@ float Plane::getD() const
 
 bool Plane::contains(const sf::Vector3f& point)
 {
-	if (dot(point, m_Normal) >= m_D));
+	return dot(point, m_Normal) >= m_D;
 }
