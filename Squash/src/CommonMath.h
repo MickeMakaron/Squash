@@ -1,4 +1,4 @@
-﻿
+﻿#pragma once
 
 #ifndef COMMON_MATH_H
 #define COMMON_MATH_H
