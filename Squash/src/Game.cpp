@@ -7,7 +7,7 @@
 
 Game::Game()
 	: m_Window()
-	, m_Framerate(0.f)
+	, m_Framerate(60.f)
 	, m_Shape(20.f)
 {
 	m_Window.create(sf::VideoMode(1280, 720), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
@@ -49,16 +49,23 @@ void Game::run()
 	while (m_Window.isOpen())
 	{
 		currentDelay += timer.restart().asSeconds();
-		m_Framerate = 1.f / currentDelay;
 
-		while(currentDelay >= step)
+		// Aging algorithm to smooth fps display
+		m_Framerate = 0.5f / currentDelay + 0.5f * m_Framerate; 
+
+		bool worldHasUpdated = false;
+
+		while(currentDelay > step)
 		{
+			worldHasUpdated = true;
+
 			handleEvents();
 			update(step);
 			currentDelay -= step;
 		}
 
-		draw();
+		if(worldHasUpdated)
+			draw();
 	}
 
 }
