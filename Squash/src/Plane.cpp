@@ -30,7 +30,7 @@ float Plane::getD() const
 	return m_D;
 }
 
-bool Plane::contains(const sf::Vector3f& point)
+bool Plane::contains(const sf::Vector3f& point) const
 {
 	return dot(point, m_Normal) >= m_D;
 }

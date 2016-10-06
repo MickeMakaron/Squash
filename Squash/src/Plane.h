@@ -15,7 +15,7 @@ public:
 	const sf::Vector3f& getNormal() const;
 	float getD() const;
 
-	bool contains(const sf::Vector3f& point);
+	bool contains(const sf::Vector3f& point) const;
 
 private:
 	sf::Vector3f	m_Normal;
