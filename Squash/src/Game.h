@@ -6,6 +6,9 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 
+#include <SFML/Graphics/Texture.hpp>
+#include "Tile.h"
+
 class Game
 {
 public:
@@ -25,6 +28,9 @@ private:
 	float				m_Framerate;
 
 	sf::CircleShape		m_Shape;	// A temporary test shape
+
+	sf::Texture			m_TestTexture;
+	Tile				m_Tile;
 
 };
 

@@ -1,19 +1,32 @@
 #include "Game.h"
 
+#include <iostream>
+
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Event.hpp>
 
+
+
+
 Game::Game()
 	: m_Window()
 	, m_Framerate(60.f)
 	, m_Shape(20.f)
+	, m_TestTexture()
+	, m_Tile()
 {
 	m_Window.create(sf::VideoMode(1280, 720), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
 
 	m_Shape.setFillColor(sf::Color::Red);
 	m_Shape.setPosition(0.f, 400.f - m_Shape.getRadius() / 2.f);
+
+
+	if (!m_TestTexture.loadFromFile("./res/FloorTest1.png"))
+		std::cout << "Failed to load texture" << std::endl;
+	m_Tile.setTexture(m_TestTexture);
+	m_Tile.setPosition({ 2,0,0 });
 }
 
 Game::~Game()
@@ -104,6 +117,16 @@ void Game::update(float dt)
 	else if (m_Shape.getPosition().x + 2.f * m_Shape.getRadius() >= 1280 && moveRight)
 		moveRight = false;
 	// Temporary : Just for testing ^^^^^
+	
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_Tile.move({ 1.f * dt, 0.f, 0.f });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_Tile.move({ -1.f * dt, 0.f, 0.f });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		m_Tile.move({ 0.f, 1.f * dt, 0.f });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		m_Tile.move({ 0.f, -1.f * dt, 0.f });
 
 
 	/*
@@ -121,6 +144,8 @@ void Game::draw()
 	m_Window.clear();
 
 	m_Window.draw(m_Shape);
+
+	m_Window.draw(m_Tile);
 
 	/*
 		Insert draw calls here	
