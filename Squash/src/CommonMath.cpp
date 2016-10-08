@@ -1,6 +1,7 @@
 #include "CommonMath.h"
 
 #include <set>
+#include <cmath>
 
 float dot(const sf::Vector2f& left, const sf::Vector2f& right)
 {
