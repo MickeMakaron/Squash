@@ -21,9 +21,14 @@ public:
 	virtual void move(float dt);
 	virtual void accelerate(const sf::Vector3f& acc);
 	virtual const sf::Vector3f& getVelocity() const;
+	void setSize(float width, float height);
+
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
+private:
+    void resetOrigin();
 
 private:
     std::shared_ptr<sf::Texture> m_Texture;
