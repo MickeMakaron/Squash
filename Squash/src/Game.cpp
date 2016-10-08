@@ -15,8 +15,9 @@ Game::Game()
 	: m_Window()
 	, m_Framerate(60.f)
 	, m_Shape(20.f)
-	, m_TestTexture()
 	, m_Tile()
+	, m_TestTexture(new sf::Texture())
+	, m_PlayerTexture(new sf::Texture())
 {
 	m_Window.create(sf::VideoMode(1280, 720), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
 
@@ -24,13 +25,13 @@ Game::Game()
 	m_Shape.setPosition(0.f, 400.f - m_Shape.getRadius() / 2.f);
 
 
-	if (!m_TestTexture.loadFromFile("./res/FloorTest1.png"))
+	if (!m_TestTexture->loadFromFile("./res/FloorTest1.png"))
 		std::cout << "Failed to load texture" << std::endl;
 
 	m_Tile.setTexture(m_TestTexture);
 
-	m_TestTexture.loadFromFile("./res/pimp.png");
-	m_Player.setTexture(m_TestTexture);
+	m_PlayerTexture->loadFromFile("./res/pimp.png");
+	m_Player.setTexture(m_PlayerTexture);
 
 	m_Tile.setPosition({ 2,0,0 });
 	m_Player.setPosition({2, 0, 0});
@@ -80,6 +81,8 @@ void Game::run()
 			worldHasUpdated = true;
 
 			handleEvents();
+			if(!m_Window.isOpen())
+                return;
 			update(step);
 			currentDelay -= step;
 		}

@@ -10,6 +10,8 @@
 #include "Tile.h"
 #include "Player.h"
 
+#include <memory>
+
 class Game
 {
 public:
@@ -30,9 +32,10 @@ private:
 
 	sf::CircleShape		m_Shape;	// A temporary test shape
 
-	sf::Texture			m_TestTexture;
-	Tile				m_Tile;
-	Player              m_Player;
+	std::shared_ptr<sf::Texture>    m_TestTexture;
+	std::shared_ptr<sf::Texture>    m_PlayerTexture;
+	Tile				            m_Tile;
+	Player                          m_Player;
 
 };
 
