@@ -84,15 +84,15 @@ void Game::run()
 
 		bool worldHasUpdated = false;
 
-		while(currentDelay > Constants::FRAMES_PER_SECOND)
+		while(currentDelay > Constants::SECONDS_PER_FRAME)
 		{
 			worldHasUpdated = true;
 
 			handleEvents();
 			if(!m_Window.isOpen())
                 return;
-			update(Constants::FRAMES_PER_SECOND);
-			currentDelay -= Constants::FRAMES_PER_SECOND;
+			update(Constants::SECONDS_PER_FRAME);
+			currentDelay -= Constants::SECONDS_PER_FRAME;
 		}
 
 		if(worldHasUpdated)
