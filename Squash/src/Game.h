@@ -34,8 +34,10 @@ private:
 
 	std::shared_ptr<sf::Texture>    m_TestTexture;
 	std::shared_ptr<sf::Texture>    m_PlayerTexture;
+	std::shared_ptr<sf::Texture>    m_BallTexture;
 	Tile				            m_Tile;
 	Player                          m_Player;
+	SceneObject                     m_Ball;
 
 };
 

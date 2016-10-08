@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "CommonMath.h"
+#include "constants.h"
 
 #include <iostream>
 
@@ -18,11 +19,15 @@ Game::Game()
 	, m_Tile()
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
+	, m_BallTexture(new sf::Texture())
 {
-	m_Window.create(sf::VideoMode(1280, 720), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
+    using namespace Constants;
+	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
+
+	m_Window.setView(sf::View({0, 0}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
 
 	m_Shape.setFillColor(sf::Color::Red);
-	m_Shape.setPosition(0.f, 400.f - m_Shape.getRadius() / 2.f);
+	m_Shape.setPosition(-float(WINDOW_WIDTH) / 2.f, 0.f);
 
 
 	if (!m_TestTexture->loadFromFile("./res/FloorTest1.png"))
@@ -33,8 +38,12 @@ Game::Game()
 	m_PlayerTexture->loadFromFile("./res/pimp.png");
 	m_Player.setTexture(m_PlayerTexture);
 
+	m_BallTexture->loadFromFile("./res/ball.png");
+	m_Ball.setTexture(m_BallTexture);
+
 	m_Tile.setPosition({ 2,0,0 });
 	m_Player.setPosition({2, 0, 0});
+	m_Ball.setPosition({2, 0, 0});
 }
 
 Game::~Game()
@@ -65,7 +74,6 @@ void Game::run()
 	sf::Clock timer;
 
 	float currentDelay = timer.restart().asSeconds();
-	float step = 1.f/60.f;
 
 	while (m_Window.isOpen())
 	{
@@ -76,15 +84,15 @@ void Game::run()
 
 		bool worldHasUpdated = false;
 
-		while(currentDelay > step)
+		while(currentDelay > Constants::FRAMES_PER_SECOND)
 		{
 			worldHasUpdated = true;
 
 			handleEvents();
 			if(!m_Window.isOpen())
                 return;
-			update(step);
-			currentDelay -= step;
+			update(Constants::FRAMES_PER_SECOND);
+			currentDelay -= Constants::FRAMES_PER_SECOND;
 		}
 
 		if(worldHasUpdated)
@@ -125,7 +133,7 @@ void Game::update(float dt)
 
 	if (m_Shape.getPosition().x <= 0.f && !moveRight)
 		moveRight = true;
-	else if (m_Shape.getPosition().x + 2.f * m_Shape.getRadius() >= 1280 && moveRight)
+	else if (m_Shape.getPosition().x + 2.f * m_Shape.getRadius() >= Constants::WINDOW_WIDTH / 2.f && moveRight)
 		moveRight = false;
 	// Temporary : Just for testing ^^^^^
 
@@ -162,6 +170,9 @@ void Game::update(float dt)
         m_Player.move(direction * SPEED);
     }
 
+//    m_Player.accelerate({0.f, 0.f, -1.f * SPEED});
+//    m_Player.move(dt);
+
 	/*
 		Insert updates here
 	*/
@@ -171,7 +182,7 @@ void Game::draw()
 {
 	// Placeholder: FPS is displayed in the title-bar of the window
 	// Should be replaced with actual text on the screen.
-	m_Window.setTitle("fps: " + std::to_string(m_Framerate));
+	m_Window.setTitle(std::string(Constants::WINDOW_TITLE) + " | fps: " + std::to_string(m_Framerate));
 
 	// No draw calls before this.
 	m_Window.clear();
@@ -180,7 +191,9 @@ void Game::draw()
 
 	m_Window.draw(m_Tile);
 
+	m_Window.draw(m_Ball);
 	m_Window.draw(m_Player);
+
 
 	/*
 		Insert draw calls here
