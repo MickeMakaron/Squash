@@ -16,7 +16,9 @@ public:
 	virtual void setTexture(const std::shared_ptr<sf::Texture>& texture);
 
 	virtual void setPosition(const sf::Vector3f& pos);
-	virtual void move(const sf::Vector3f delta);
+	virtual void move(const sf::Vector3f& delta);
+	virtual void move(float dt);
+	virtual void accelerate(const sf::Vector3f& acc);
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -25,6 +27,7 @@ private:
     std::shared_ptr<sf::Texture> m_Texture;
 	sf::Sprite      m_Sprite;
 	sf::Vector3f    m_Position;
+	sf::Vector3f    m_Velocity;
 
 };
 

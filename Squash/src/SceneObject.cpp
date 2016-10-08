@@ -26,14 +26,24 @@ void SceneObject::setPosition(const sf::Vector3f& pos)
 	m_Sprite.setPosition(isometricProjection(m_Position));
 }
 
-void SceneObject::move(const sf::Vector3f delta)
+void SceneObject::move(const sf::Vector3f& delta)
 {
 	m_Position += delta;
 	m_Sprite.setPosition(isometricProjection(m_Position));
+}
+
+void SceneObject::move(float dt)
+{
+    move(m_Velocity * dt);
 }
 
 void SceneObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_Sprite, states);
 
+}
+
+void SceneObject::accelerate(const sf::Vector3f& acc)
+{
+    m_Velocity += acc;
 }
