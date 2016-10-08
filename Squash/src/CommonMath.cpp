@@ -1,5 +1,5 @@
 #include "CommonMath.h"
-
+#include "constants.h"
 #include <set>
 #include <cmath>
 
@@ -61,7 +61,7 @@ sf::Vector2f isometricProjection(const sf::Vector3f& v)
 	result.x = (2.f * v.x + 2.f * v.y            );
 	result.y = (	  v.x -		  v.y - 2.f * v.z);
 
-	result *= 60.f; // <-- TILE SIZE should perhaps be a constant
+	result *= Constants::TILE_SIZE;
 
 	return result;
 }
