@@ -8,6 +8,7 @@
 
 #include <SFML/Graphics/Texture.hpp>
 #include "Tile.h"
+#include "Player.h"
 
 class Game
 {
@@ -16,7 +17,7 @@ public:
 	~Game();
 
 	void init();
-	
+
 	void run();
 
 	void handleEvents();
@@ -31,6 +32,7 @@ private:
 
 	sf::Texture			m_TestTexture;
 	Tile				m_Tile;
+	Player              m_Player;
 
 };
 

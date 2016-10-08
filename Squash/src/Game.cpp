@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "CommonMath.h"
 
 #include <iostream>
 
@@ -25,8 +26,14 @@ Game::Game()
 
 	if (!m_TestTexture.loadFromFile("./res/FloorTest1.png"))
 		std::cout << "Failed to load texture" << std::endl;
+
 	m_Tile.setTexture(m_TestTexture);
+
+	m_TestTexture.loadFromFile("./res/pimp.png");
+	m_Player.setTexture(m_TestTexture);
+
 	m_Tile.setPosition({ 2,0,0 });
+	m_Player.setPosition({2, 0, 0});
 }
 
 Game::~Game()
@@ -64,7 +71,7 @@ void Game::run()
 		currentDelay += timer.restart().asSeconds();
 
 		// Aging algorithm to smooth fps display
-		m_Framerate = 0.5f / currentDelay + 0.5f * m_Framerate; 
+		m_Framerate = 0.5f / currentDelay + 0.5f * m_Framerate;
 
 		bool worldHasUpdated = false;
 
@@ -91,12 +98,13 @@ void Game::handleEvents()
 		switch (event.type)
 		{
 		case sf::Event::Closed:
-			m_Window.close(); 
+			m_Window.close();
 			break;
 		case sf::Event::KeyPressed:
 			if (event.key.code == sf::Keyboard::Escape)
-				m_Window.close(); 
+				m_Window.close();
 			break;
+
 		}
 
 	}
@@ -106,18 +114,18 @@ void Game::update(float dt)
 {
 	// Temporary : Just for testing vvvvv
 	static bool moveRight = true;
-	
+
 	if (moveRight)
 		m_Shape.move(150.f * dt, 0.f);
 	else
 		m_Shape.move(-150.f * dt, 0.f);
-	
+
 	if (m_Shape.getPosition().x <= 0.f && !moveRight)
 		moveRight = true;
 	else if (m_Shape.getPosition().x + 2.f * m_Shape.getRadius() >= 1280 && moveRight)
 		moveRight = false;
 	// Temporary : Just for testing ^^^^^
-	
+
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		m_Tile.move({ 1.f * dt, 0.f, 0.f });
@@ -128,6 +136,28 @@ void Game::update(float dt)
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_Tile.move({ 0.f, -1.f * dt, 0.f });
 
+    static const sf::Vector3f DOWN(1.f, -1.f, 0.f);
+    static const sf::Vector3f UP(-1.f, 1.f, 0.f);
+    static const sf::Vector3f RIGHT(1.f, 1.f, 0.f);
+    static const sf::Vector3f LEFT(-1.f, -1.f, 0.f);
+    static const float SPEED = 0.05f;
+    sf::Vector3f direction(0.f, 0.f, 0.f);
+
+    typedef sf::Keyboard K;
+	if(K::isKeyPressed(K::D))
+		direction += RIGHT;
+	if(K::isKeyPressed(K::A))
+		direction += LEFT;
+	if(K::isKeyPressed(K::W))
+		direction += UP;
+	if(K::isKeyPressed(K::S))
+		direction += DOWN;
+
+    if(length(direction) > 0.f)
+    {
+        direction = normalize(direction);
+        m_Player.move(direction * SPEED);
+    }
 
 	/*
 		Insert updates here
@@ -147,8 +177,10 @@ void Game::draw()
 
 	m_Window.draw(m_Tile);
 
+	m_Window.draw(m_Player);
+
 	/*
-		Insert draw calls here	
+		Insert draw calls here
 	*/
 
 	// No draw calls after this.
