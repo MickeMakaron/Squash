@@ -9,6 +9,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include "Tile.h"
 #include "Player.h"
+#include "Ball.h"
 
 #include <memory>
 
@@ -37,7 +38,7 @@ private:
 	std::shared_ptr<sf::Texture>    m_BallTexture;
 	Tile				            m_Tile;
 	Player                          m_Player;
-	SceneObject                     m_Ball;
+	Ball                     m_Ball;
 
 };
 

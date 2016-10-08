@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "CommonMath.h"
 #include "constants.h"
+#include "physics.h"
 
 #include <iostream>
 
@@ -20,6 +21,7 @@ Game::Game()
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
+    , m_Ball(20.f)
 {
     using namespace Constants;
 	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
@@ -41,9 +43,9 @@ Game::Game()
 	m_BallTexture->loadFromFile("./res/ball.png");
 	m_Ball.setTexture(m_BallTexture);
 
-	m_Tile.setPosition({ 2,0,0 });
-	m_Player.setPosition({2, 0, 0});
-	m_Ball.setPosition({0, 0, 5.f});
+	m_Tile.setPosition({2 * TILE_SIZE, 0, 0});
+	m_Player.setPosition({0, 0, 0});
+	m_Ball.setPosition({0, 0, 60.f});
 }
 
 Game::~Game()
@@ -131,27 +133,27 @@ void Game::update(float dt)
 	else
 		m_Shape.move(-150.f * dt, 0.f);
 
-	if (m_Shape.getPosition().x <= 0.f && !moveRight)
+	if (m_Shape.getPosition().x <= -float(Constants::WINDOW_WIDTH) / 2.f && !moveRight)
 		moveRight = true;
 	else if (m_Shape.getPosition().x + 2.f * m_Shape.getRadius() >= Constants::WINDOW_WIDTH / 2.f && moveRight)
 		moveRight = false;
 	// Temporary : Just for testing ^^^^^
 
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		m_Tile.move({ 1.f * dt, 0.f, 0.f });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		m_Tile.move({ -1.f * dt, 0.f, 0.f });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		m_Tile.move({ 0.f, 1.f * dt, 0.f });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		m_Tile.move({ 0.f, -1.f * dt, 0.f });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+//		m_Tile.move({ 1.f * dt, 0.f, 0.f });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+//		m_Tile.move({ -1.f * dt, 0.f, 0.f });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+//		m_Tile.move({ 0.f, 1.f * dt, 0.f });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+//		m_Tile.move({ 0.f, -1.f * dt, 0.f });
 
     static const sf::Vector3f DOWN(1.f, -1.f, 0.f);
     static const sf::Vector3f UP(-1.f, 1.f, 0.f);
     static const sf::Vector3f RIGHT(1.f, 1.f, 0.f);
     static const sf::Vector3f LEFT(-1.f, -1.f, 0.f);
-    static const float SPEED = 0.05f;
+    static const float SPEED = 1.f;
     sf::Vector3f direction(0.f, 0.f, 0.f);
 
     typedef sf::Keyboard K;
@@ -171,15 +173,18 @@ void Game::update(float dt)
     }
 
 
-    m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
+
+    Plane plane({0.f, 0.f, 1.f}, 0);
+    handleCollision(m_Ball, {plane});
+    m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);
 
-    float ballZ = m_Ball.getPosition().z;
-    if(ballZ < 0.f)
-    {
-        m_Ball.move({0, 0, -ballZ});
-        m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z * 1.5f});
-    }
+//    float ballZ = m_Ball.getPosition().z - m_Ball.getRadius();
+//    if(ballZ < 0.f)
+//    {
+//        m_Ball.move({0, 0, -ballZ});
+//        m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z * 1.5f});
+//    }
 //    m_Player.accelerate({0.f, 0.f, -1.f * SPEED});
 //    m_Player.move(dt);
 
