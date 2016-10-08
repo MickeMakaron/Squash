@@ -24,7 +24,7 @@ Game::Game()
     using namespace Constants;
 	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
 
-	m_Window.setView(sf::View({0, 0}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
+	m_Window.setView(sf::View({0, 0}, {static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT)}));
 
 	m_Shape.setFillColor(sf::Color::Red);
 	m_Shape.setPosition(-float(WINDOW_WIDTH) / 2.f, 0.f);
