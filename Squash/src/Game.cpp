@@ -43,7 +43,7 @@ Game::Game()
 
 	m_Tile.setPosition({ 2,0,0 });
 	m_Player.setPosition({2, 0, 0});
-	m_Ball.setPosition({2, 0, 0});
+	m_Ball.setPosition({0, 0, 5.f});
 }
 
 Game::~Game()
@@ -170,6 +170,16 @@ void Game::update(float dt)
         m_Player.move(direction * SPEED);
     }
 
+
+    m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
+    m_Ball.move(dt);
+
+    float ballZ = m_Ball.getPosition().z;
+    if(ballZ < 0.f)
+    {
+        m_Ball.move({0, 0, -ballZ});
+        m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z * 1.5f});
+    }
 //    m_Player.accelerate({0.f, 0.f, -1.f * SPEED});
 //    m_Player.move(dt);
 
