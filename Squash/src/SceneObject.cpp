@@ -26,6 +26,12 @@ void SceneObject::setPosition(const sf::Vector3f& pos)
 	m_Sprite.setPosition(isometricProjection(m_Position));
 }
 
+const sf::Vector3f& SceneObject::getPosition() const
+{
+    return m_Position;
+}
+
+
 void SceneObject::move(const sf::Vector3f& delta)
 {
 	m_Position += delta;
@@ -47,3 +53,9 @@ void SceneObject::accelerate(const sf::Vector3f& acc)
 {
     m_Velocity += acc;
 }
+
+const sf::Vector3f& SceneObject::getVelocity() const
+{
+    return m_Velocity;
+}
+
