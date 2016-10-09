@@ -3,11 +3,10 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include "Plane.h"
-#include <vector>
 class Ball;
+class ScenePlane;
 
 
-void handleCollision(Ball& ball, const std::vector<Plane>& planes);
+bool handleCollision(Ball& ball, const ScenePlane& planes);
 
 #endif //PHYSICS_H

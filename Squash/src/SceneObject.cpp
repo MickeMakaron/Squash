@@ -71,3 +71,14 @@ void SceneObject::setSize(float width, float height)
 	m_Sprite.setScale(width / SPRITE_WIDTH, height / SPRITE_HEIGHT);
 	resetOrigin();
 }
+
+
+void SceneObject::setMass(float mass)
+{
+    m_Mass = mass;
+}
+
+float SceneObject::getMass() const
+{
+    return m_Mass;
+}

@@ -2,8 +2,10 @@
 #include "CommonMath.h"
 #include "constants.h"
 #include "physics.h"
+#include "ScenePlane.h"
 
 #include <iostream>
+#include <limits>
 
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Clock.hpp>
@@ -46,6 +48,9 @@ Game::Game()
 	m_Tile.setPosition({2 * TILE_SIZE, 0, 0});
 	m_Player.setPosition({0, 0, 0});
 	m_Ball.setPosition({0, 0, 60.f});
+
+	m_Ball.setMass(100.f);
+	m_Ball.accelerate({0.f, 100.f, 0.f});
 }
 
 Game::~Game()
@@ -174,8 +179,9 @@ void Game::update(float dt)
 
 
 
-    Plane plane({0.f, 0.f, 1.f}, 0);
-    handleCollision(m_Ball, {plane});
+    ScenePlane plane({0.f, 0.f, 1.f}, 0);
+    plane.setMass(std::numeric_limits<float>::max());
+    handleCollision(m_Ball, plane);
     m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);
 

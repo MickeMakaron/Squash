@@ -23,6 +23,9 @@ public:
 	virtual const sf::Vector3f& getVelocity() const;
 	void setSize(float width, float height);
 
+	void setMass(float mass);
+	float getMass() const;
+
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -35,6 +38,7 @@ private:
 	sf::Sprite      m_Sprite;
 	sf::Vector3f    m_Position;
 	sf::Vector3f    m_Velocity;
+	float           m_Mass = 0.f;
 
 };
 
