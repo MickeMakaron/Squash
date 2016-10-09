@@ -3,7 +3,8 @@
 
 
 Ball::Ball(float radius)
-: m_Radius(radius)
+: SceneObject()
+, m_Radius(radius)
 {
 }
 
