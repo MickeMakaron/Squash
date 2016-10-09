@@ -33,9 +33,11 @@ protected:
 private:
     void resetOrigin();
 
+protected:
+	sf::Sprite      m_Sprite;
+
 private:
     std::shared_ptr<sf::Texture> m_Texture;
-	sf::Sprite      m_Sprite;
 	sf::Vector3f    m_Position;
 	sf::Vector3f    m_Velocity;
 	float           m_Mass = 0.f;

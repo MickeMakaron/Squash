@@ -42,7 +42,7 @@ Game::Game()
 	m_PlayerTexture->loadFromFile("./res/pimp.png");
 	m_Player.setTexture(m_PlayerTexture);
 
-	m_BallTexture->loadFromFile("./res/ball.png");
+	m_BallTexture->loadFromFile("./res/Ball_SpriteSheet.png");
 	m_Ball.setTexture(m_BallTexture);
 
 	m_Tile.setPosition({2 * TILE_SIZE, 0, 0});
@@ -180,7 +180,7 @@ void Game::update(float dt)
 
 
     ScenePlane plane({0.f, 0.f, 1.f}, 0);
-    plane.setMass(std::numeric_limits<float>::max());
+    plane.setMass(std::numeric_limits<float>::max() / 2.f);
     handleCollision(m_Ball, plane);
     m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);

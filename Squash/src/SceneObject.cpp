@@ -19,8 +19,8 @@ void SceneObject::setTexture(const std::shared_ptr<sf::Texture>& texture)
 
 void SceneObject::resetOrigin()
 {
-	float spriteWidth = m_Sprite.getGlobalBounds().width;
-	float spriteHeight = m_Sprite.getGlobalBounds().height;
+	float spriteWidth = m_Sprite.getTextureRect().width;
+	float spriteHeight = m_Sprite.getTextureRect().height;
 	m_Sprite.setOrigin(spriteWidth / 2.f, spriteHeight);
 }
 
@@ -65,8 +65,8 @@ const sf::Vector3f& SceneObject::getVelocity() const
 
 void SceneObject::setSize(float width, float height)
 {
-	const float SPRITE_WIDTH = m_Sprite.getGlobalBounds().width;
-	const float SPRITE_HEIGHT = m_Sprite.getGlobalBounds().height;
+	const float SPRITE_WIDTH = m_Sprite.getTextureRect().width;
+	const float SPRITE_HEIGHT = m_Sprite.getTextureRect().height;
 
 	m_Sprite.setScale(width / SPRITE_WIDTH, height / SPRITE_HEIGHT);
 	resetOrigin();
