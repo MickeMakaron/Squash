@@ -180,8 +180,11 @@ void Game::update(float dt)
 
 
     ScenePlane plane({0.f, 0.f, 1.f}, 0);
-    plane.setMass(std::numeric_limits<float>::max() / 2.f);
+    ScenePlane wall({0.f, -1.f, 0.f}, -Constants::TILE_SIZE * 2.f);
+    plane.setMass(std::numeric_limits<float>::max());
+    wall.setMass(std::numeric_limits<float>::max());
     handleCollision(m_Ball, plane);
+    handleCollision(m_Ball, wall);
     m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);
 
