@@ -45,7 +45,7 @@ Game::Game()
 	m_BallTexture->loadFromFile("./res/Ball_SpriteSheet.png");
 	m_Ball.setTexture(m_BallTexture);
 
-	m_Tile.setPosition({2 * TILE_SIZE, 0, 0});
+	m_Tile.setPosition({0 * TILE_SIZE, 0, 0});
 	m_Player.setPosition({0, 0, 0});
 	m_Ball.setPosition({0, 0, 60.f});
 
@@ -188,7 +188,7 @@ void Game::update(float dt)
     m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		m_Ball.rotate({ 5,0,0 });
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_Ball.rotate({ -5,0,0 });
@@ -198,7 +198,7 @@ void Game::update(float dt)
 		m_Ball.rotate({ 0,5,0 });
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		m_Ball.rotate({ 0,0,-5 });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 		m_Ball.rotate({ 0,0,5 });
 	
 

@@ -21,7 +21,7 @@ void SceneObject::resetOrigin()
 {
 	float spriteWidth = m_Sprite.getTextureRect().width;
 	float spriteHeight = m_Sprite.getTextureRect().height;
-	m_Sprite.setOrigin(spriteWidth / 2.f, spriteHeight);
+	m_Sprite.setOrigin(spriteWidth / 2.f, spriteHeight - spriteWidth / 4.f);
 }
 
 void SceneObject::setPosition(const sf::Vector3f& pos)
