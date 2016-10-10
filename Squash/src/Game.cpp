@@ -50,7 +50,7 @@ Game::Game()
 	m_Ball.setPosition({0, 0, 60.f});
 
 	m_Ball.setMass(100.f);
-	m_Ball.accelerate({0.f, 100.f, 0.f});
+	m_Ball.accelerate({0.f, 20.f, 0.f});
 }
 
 Game::~Game()
@@ -184,7 +184,7 @@ void Game::update(float dt)
     plane.setMass(std::numeric_limits<float>::max() / 2.f);
     wall.setMass(std::numeric_limits<float>::max() / 2.f);
     handleCollision(m_Ball, plane);
-    handleCollision(m_Ball, wall);
+//    handleCollision(m_Ball, wall);
     m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);
 
