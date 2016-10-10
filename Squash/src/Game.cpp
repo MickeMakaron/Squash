@@ -132,6 +132,7 @@ void Game::update(float dt)
 {
 	// Temporary : Just for testing vvvvv
 	static bool moveRight = true;
+	static bool isBallRolling = false;
 
 	if (moveRight)
 		m_Shape.move(150.f * dt, 0.f);
@@ -183,10 +184,21 @@ void Game::update(float dt)
     ScenePlane wall({0.f, -1.f, 0.f}, -Constants::TILE_SIZE * 2.f);
     plane.setMass(std::numeric_limits<float>::max() / 2.f);
     wall.setMass(std::numeric_limits<float>::max() / 2.f);
-    handleCollision(m_Ball, plane);
+
+    if(handleCollision(m_Ball, plane))
+    {
+        isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
+        if(isBallRolling)
+            m_Ball.accelerate({0.f, 0.f, -m_Ball.getVelocity().z});
+    }
+    else //if(!isBallRolling)
+        m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
+
+
+
 //    handleCollision(m_Ball, wall);
-    m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);
+    m_Ball.rotate(dt);
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		m_Ball.rotate({ 5,0,0 });
@@ -200,7 +212,7 @@ void Game::update(float dt)
 		m_Ball.rotate({ 0,0,-5 });
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 		m_Ball.rotate({ 0,0,5 });
-	
+
 
 //    float ballZ = m_Ball.getPosition().z - m_Ball.getRadius();
 //    if(ballZ < 0.f)
