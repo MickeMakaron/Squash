@@ -200,18 +200,18 @@ void Game::update(float dt)
     m_Ball.move(dt);
     m_Ball.rotate(dt);
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		m_Ball.rotate({ 5,0,0 });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		m_Ball.rotate({ -5,0,0 });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		m_Ball.rotate({ 0,-5,0 });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		m_Ball.rotate({ 0,5,0 });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-		m_Ball.rotate({ 0,0,-5 });
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-		m_Ball.rotate({ 0,0,5 });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+//		m_Ball.rotate({ 5,0,0 });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+//		m_Ball.rotate({ -5,0,0 });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+//		m_Ball.rotate({ 0,-5,0 });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+//		m_Ball.rotate({ 0,5,0 });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+//		m_Ball.rotate({ 0,0,-5 });
+//	if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+//		m_Ball.rotate({ 0,0,5 });
 
 
 //    float ballZ = m_Ball.getPosition().z - m_Ball.getRadius();

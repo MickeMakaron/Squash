@@ -60,42 +60,26 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
         const float BALL_FRICTION_DIRECTION_SPEED_POST_ROLL = length(BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL);
 
         sf::Vector3f ballAcceleration(0.f, 0.f, 0.f);
-        const float BALL_SPEED = dot(ball.getVelocity(), FRICTION_DIRECTION);
-        const float SPIN_SPEED = dot(BALL_SPIN_VELOCITY, FRICTION_DIRECTION);
-//        if(!(BALL_SPEED > SPIN_SPEED - 0.01f && BALL_SPEED < SPIN_SPEED + 0.01f))
-//        if(BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL < BALL_FRICTION_DIRECTION_SPEED_POST_ROLL)
+        if(BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL < BALL_FRICTION_DIRECTION_SPEED_POST_ROLL)
         {
             // Roll condition false
             ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL;
-//            ballAngularAcceleration
 
             if(length2(FRICTION_DIRECTION) > 0.01f)
             {
-                ballAngularVelocity
-    //                = cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS));
-                    = cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS));
+                ballAngularVelocity = cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS));
             }
             std::cout << "NO ROLL" << std::endl;
         }
-//        else
-//        {
-//            // Roll condition true
-//            ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
-////            const sf::Vector3f FRICTION_DIRECTION_ROLL = normalize(cross(cross(ball.getVelocity() - PLANE_VELOCITY, LOA), LOA));
-////            ballAcceleration += FRICTION_DIRECTION_ROLL * ((5.f / 7.f) - 1.f) * dot(ball.getVelocity(), FRICTION_DIRECTION_ROLL);
-////            ballAcceleration +=
-////            const sf::Vector3f BALL_SPIN_DIRECTION = normalize(BALL_SPIN_VELOCITY);
-////            ballAngularAcceleration = BALL_SPIN_DIRECTION * (BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL / BALL_RADIUS);
-////            ballAngularAcceleration += ballAngularVelocity + BALL_SPIN_DIRECTION * (BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL / BALL_RADIUS);
-//
-//            ballAngularVelocity = FRICTION_DIRECTION * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS);
-////            ballAngularVelocity = FRICTION_DIRECTION_ROLL * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS);
-////            if(length2(FRICTION_DIRECTION) > 0.01f)
-////            {
-////                ballAngularVelocity = FRICTION_DIRECTION * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS);
-////            }
-//            std::cout << "ROLL" << std::endl;
-//        }
+        else
+        {
+            // Roll condition true
+            ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
+
+            ballAngularVelocity = FRICTION_DIRECTION * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS);
+
+            std::cout << "ROLL" << std::endl;
+        }
 
 
         ball.accelerate(ballAcceleration);
