@@ -26,6 +26,7 @@ public:
 	void setMass(float mass);
 	float getMass() const;
 
+	bool isMassive() const;
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

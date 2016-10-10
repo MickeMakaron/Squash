@@ -44,8 +44,8 @@ float length(const sf::Vector3f& v)
 sf::Vector2f normalize(const sf::Vector2f& v)
 {
 	float l = length(v);
-	if (l == 0)
-		return v;
+	if (l <= 1.0e-9f)
+		return sf::Vector2f(0.f, 0.f);
 
 	sf::Vector2f result = v / l;
 	return result;
@@ -54,8 +54,8 @@ sf::Vector2f normalize(const sf::Vector2f& v)
 sf::Vector3f normalize(const sf::Vector3f& v)
 {
 	float l = length(v);
-	if (l == 0)
-		return v;
+	if (l <= 1.0e-9f)
+		return sf::Vector3f(0.f,0.f,0.f);
 
 	sf::Vector3f result = v / l;
 	return result;

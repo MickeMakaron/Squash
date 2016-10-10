@@ -82,3 +82,8 @@ float SceneObject::getMass() const
 {
     return m_Mass;
 }
+
+bool SceneObject::isMassive() const
+{
+	return m_Mass == 0.f;
+}

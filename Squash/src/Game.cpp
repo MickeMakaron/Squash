@@ -51,6 +51,7 @@ Game::Game()
 
 	m_Ball.setMass(100.f);
 	m_Ball.accelerate({0.f, 20.f, 0.f});
+	//m_Ball.accelerateAngular({0.f, 4.f, 0.f});
 }
 
 Game::~Game()
@@ -108,6 +109,8 @@ void Game::run()
 
 }
 
+bool paused = false;
+
 void Game::handleEvents()
 {
 	sf::Event event;
@@ -121,8 +124,10 @@ void Game::handleEvents()
 		case sf::Event::KeyPressed:
 			if (event.key.code == sf::Keyboard::Escape)
 				m_Window.close();
+			if (event.key.code == sf::Keyboard::P)
+				paused = !paused;
 			break;
-
+			
 		}
 
 	}
@@ -130,6 +135,9 @@ void Game::handleEvents()
 
 void Game::update(float dt)
 {
+	if (paused)
+		return;
+
 	// Temporary : Just for testing vvvvv
 	static bool moveRight = true;
 	static bool isBallRolling = false;
@@ -182,10 +190,10 @@ void Game::update(float dt)
 
     ScenePlane plane({0.f, 0.f, 1.f}, 0);
     ScenePlane wall({0.f, -1.f, 0.f}, -Constants::TILE_SIZE * 2.f);
-    plane.setMass(std::numeric_limits<float>::max() / 2.f);
-    wall.setMass(std::numeric_limits<float>::max() / 2.f);
+    plane.setMass(0.f);
+    wall.setMass(0.f);
 
-    if(handleCollision(m_Ball, plane))
+    if(handleCollision2(m_Ball, plane))
     {
         isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
         if(isBallRolling)
@@ -242,7 +250,7 @@ void Game::draw()
 	m_Window.draw(m_Tile);
 
 	m_Window.draw(m_Ball);
-	m_Window.draw(m_Player);
+	//m_Window.draw(m_Player);
 
 
 	/*

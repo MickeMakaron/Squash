@@ -90,9 +90,24 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
     return false;
 }
 
-float calcExitSpeed(float m1, float m2, float v1, float v2, float e)
+float calcExitSpeed_LineOfAction(float m1, float m2, float v1, float v2, float e)
 {
-	
+	return (m1 - e*m2) * v1 / (m1 + m2) + (1 + e)*m2 * v2 / (m1 + m2);
+}
+
+float calcExitSpeed_LineOfAction(float v, float e)
+{
+	return -e*v;
+}
+
+float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float µ)
+{
+	return v_n + (u_p - v_p) * µ;
+}
+
+float calcExitSpeed_Friction_WithRoll(float v_n)
+{
+	return 5.f*v_n/7.f;
 }
 
 bool handleCollision2(Ball& ball, const ScenePlane& plane)
@@ -100,20 +115,75 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 	static const float COLLISION_FACTOR = 0.8f;
 	static const float FRICTION_FACTOR = 0.1f;
 
-	
-	// CP = Collision point
-	sf::Vector3f vectorCP = plane.getNormal() * (-ball.getRadius());
-	sf::Vector3f velocityAtCP = ball.getVelocity() + cross(ballAngularVelocity, vectorCP);
+	float distance = dot(ball.getPosition(), plane.getNormal()) - plane.getD();
 
-	// Important directions
-	sf::Vector3f lineOfAction = plane.getNormal();
-	sf::Vector3f vectorFriction = cross(normalize(cross(velocityAtCP, lineOfAction)), lineOfAction);
+	// If close enough, COLLIDE!
+	if(std::fabs(distance) <= ball.getRadius())
+	{
+		
+		// CP = Collision point
+		sf::Vector3f vectorCP = plane.getNormal() * (-ball.getRadius());
+		sf::Vector3f velocityAtCP = ball.getVelocity() + cross(ball.getAngularVelocity(), vectorCP);
 
-	// Collapse into one dimension
-	float velCP_p = dot(velocityAtCP, lineOfAction);
-	float vel_n = dot(velocityAtCP, vectorFriction);
+		// Important directions
+		sf::Vector3f lineOfAction = plane.getNormal();
+		sf::Vector3f vectorFriction = cross(normalize(cross(velocityAtCP - plane.getVelocity(), lineOfAction)), lineOfAction);
 
-	
+		// Collapse into one dimension
+		float pre_vel_p = dot(velocityAtCP, lineOfAction);
+		float pre_vel_n = dot(velocityAtCP, vectorFriction);
+
+		// (Future note: velocity of what, the ball itself or the collision point? Hmmm)
+		float post_vel_p;
+		if(plane.isMassive())
+		{
+			post_vel_p = calcExitSpeed_LineOfAction(pre_vel_p, COLLISION_FACTOR);
+		}
+		else
+		{
+			post_vel_p = calcExitSpeed_LineOfAction(ball.getMass(), plane.getMass(), pre_vel_p, dot(plane.getVelocity(), lineOfAction), COLLISION_FACTOR);
+		}
+
+		// We must compare the resulting speed of both Roll and No Roll conditions
+		// to find which gives the smallest result (which is the one we want)
+		float post_vel_n_NoRoll = calcExitSpeed_Friction_NoRoll(pre_vel_n, post_vel_p, pre_vel_p, FRICTION_FACTOR);
+		float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(pre_vel_n);
+
+		sf::Vector3f resultingVelocity;
+		sf::Vector3f resultingAngularVelocity;
+		if (post_vel_n_NoRoll < post_vel_n_Roll)
+		{
+			// No roll condition!
+
+			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_NoRoll;
+
+			//if(length2(vectorFriction) >= 0.01)
+				resultingAngularVelocity = 5 * FRICTION_FACTOR * (post_vel_p - pre_vel_p) / (2 * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
+
+			std::cout << "-----------\nNO ROLL!\nVel: (" << 
+				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" << 
+				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+		}
+		else
+		{
+			// Roll condition!
+
+			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_Roll;
+			
+			// The cross is an assumption at this point!
+			resultingAngularVelocity = post_vel_n_Roll / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction)); 
+
+			std::cout << "-----------\nROLL!\nVel: (" <<
+				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
+				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+		}
 
 
+		ball.accelerate(resultingVelocity - ball.getVelocity());
+		ball.accelerateAngular(resultingAngularVelocity - ball.getAngularVelocity());
+
+		return true;
+	}
+
+	return false;
 }
