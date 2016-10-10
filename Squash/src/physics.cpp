@@ -90,17 +90,30 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
     return false;
 }
 
+float calcExitSpeed(float m1, float m2, float v1, float v2, float e)
+{
+	
+}
+
 bool handleCollision2(Ball& ball, const ScenePlane& plane)
 {
 	static const float COLLISION_FACTOR = 0.8f;
 	static const float FRICTION_FACTOR = 0.1f;
 
 	
-	// Collision point
-	sf::Vector3f vectorCP = plane.getNormal() * ball.getRadius();
+	// CP = Collision point
+	sf::Vector3f vectorCP = plane.getNormal() * (-ball.getRadius());
+	sf::Vector3f velocityAtCP = ball.getVelocity() + cross(ballAngularVelocity, vectorCP);
 
-	sf::Vector3f velocityCP = ball.getVelocity() + cross(ballAngularVelocity, vectorCP);
+	// Important directions
+	sf::Vector3f lineOfAction = plane.getNormal();
+	sf::Vector3f vectorFriction = cross(normalize(cross(velocityAtCP, lineOfAction)), lineOfAction);
 
+	// Collapse into one dimension
+	float velCP_p = dot(velocityAtCP, lineOfAction);
+	float vel_n = dot(velocityAtCP, vectorFriction);
+
+	
 
 
 }
