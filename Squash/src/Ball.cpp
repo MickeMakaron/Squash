@@ -69,9 +69,9 @@ void Ball::rotate(sf::Vector3f angles)
 
 void Ball::rotate(float dt)
 {
-    sf::Vector3f angV(0.f, 0.f, 10.f);
-    sf::Vector3f rotation(100.f * dt, 0, 0);
-    rotate(rotation);
+//    sf::Vector3f angV(0.f, 0.f, 10.f);
+//    sf::Vector3f rotation(100.f * dt, 0, 0);
+    rotate(m_AngularVelocity * dt * 100.f);
 
 }
 
@@ -80,6 +80,10 @@ void Ball::accelerateAngular(sf::Vector3f angularAcceleration)
     m_AngularVelocity += angularAcceleration;
 }
 
+sf::Vector3f Ball::getAngularVelocity() const
+{
+    return m_AngularVelocity;
+}
 
 void Ball::resetOrigin()
 {

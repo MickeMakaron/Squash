@@ -20,6 +20,7 @@ class Ball : public SceneObject
 		// "accelerateAngular" function or something.
 		void rotate(sf::Vector3f angles);
 		void accelerateAngular(sf::Vector3f angularAcceleration);
+		sf::Vector3f getAngularVelocity() const;
 
 	protected:
 		void resetOrigin() override;
