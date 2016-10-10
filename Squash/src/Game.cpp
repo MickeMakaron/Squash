@@ -181,12 +181,26 @@ void Game::update(float dt)
 
     ScenePlane plane({0.f, 0.f, 1.f}, 0);
     ScenePlane wall({0.f, -1.f, 0.f}, -Constants::TILE_SIZE * 2.f);
-    plane.setMass(std::numeric_limits<float>::max());
-    wall.setMass(std::numeric_limits<float>::max());
+    plane.setMass(std::numeric_limits<float>::max() / 2.f);
+    wall.setMass(std::numeric_limits<float>::max() / 2.f);
     handleCollision(m_Ball, plane);
     handleCollision(m_Ball, wall);
     m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
     m_Ball.move(dt);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		m_Ball.rotate({ 5,0,0 });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		m_Ball.rotate({ -5,0,0 });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_Ball.rotate({ 0,-5,0 });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_Ball.rotate({ 0,5,0 });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		m_Ball.rotate({ 0,0,-5 });
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+		m_Ball.rotate({ 0,0,5 });
+	
 
 //    float ballZ = m_Ball.getPosition().z - m_Ball.getRadius();
 //    if(ballZ < 0.f)

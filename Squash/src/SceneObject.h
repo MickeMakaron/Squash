@@ -29,9 +29,7 @@ public:
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
-private:
-    void resetOrigin();
+    virtual void resetOrigin();
 
 protected:
 	sf::Sprite      m_Sprite;

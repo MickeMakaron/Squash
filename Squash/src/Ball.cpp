@@ -7,7 +7,7 @@ Ball::Ball(float radius)
 , m_Radius(radius)
 , m_Rotation(0, 0, 0)
 {
-	//m_Sprite.setOrigin(BALL_TILE_SIZE / 2, BALL_TILE_SIZE / 2);
+	m_Sprite.setOrigin(BALL_TILE_SIZE / 2, BALL_TILE_SIZE / 2);
 }
 
 
@@ -20,25 +20,64 @@ float Ball::getRadius() const
 void Ball::setTexture(const std::shared_ptr<sf::Texture>& texture)
 {
     SceneObject::setTexture(texture);
-    setSize(m_Radius, m_Radius);
+	
+	//m_Sprite.setTexture(*texture);
+	update();
+    //setSize(m_Radius, m_Radius);
+}
+
+void Ball::update()
+{
 	m_Sprite.setTextureRect(calcSpriteFrame());
 }
 
-void Ball::update(float dt)
+void Ball::rotate(sf::Vector3i angles)
 {
-	m_Sprite.setTextureRect(calcSpriteFrame());
+	m_Rotation += angles;
+	if (m_Rotation.x >= 360)
+		m_Rotation.x %= 360;
+	if (m_Rotation.x < 0)
+		m_Rotation.x += 360;
+
+	if (m_Rotation.y >= 360)
+		m_Rotation.y %= 360;
+	if (m_Rotation.y < 0)
+		m_Rotation.y += 360;
+
+	if (m_Rotation.z >= 360)
+		m_Rotation.z %= 360;
+	if (m_Rotation.z < 0)
+		m_Rotation.z += 360;
+
+
+	update();
+}
+
+void Ball::resetOrigin()
+{
+	float x = m_Sprite.getScale().x;
+	float y = m_Sprite.getScale().y;
+	m_Sprite.setOrigin(BALL_TILE_SIZE * x / 2, BALL_TILE_SIZE * y / 2);
 }
 
 sf::IntRect Ball::calcSpriteFrame() const
 {
 	sf::IntRect result(0, 0, BALL_TILE_SIZE, BALL_TILE_SIZE);
 
-	int pitch_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.x) / BALL_ANIM_INCREMENT));
-	int yaw_index		= static_cast<int>(roundf(static_cast<float>(m_Rotation.y) / BALL_ANIM_INCREMENT));
-	int roll_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.z) / BALL_ANIM_INCREMENT));
+	int pitch_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.x) / static_cast<float>(BALL_ANIM_INCREMENT)));
+	int yaw_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.y) / static_cast<float>(BALL_ANIM_INCREMENT)));
+	int roll_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.z) / static_cast<float>(BALL_ANIM_INCREMENT)));
+
+	// The amount of tiles per "block", as in, if block_size is 8, then there are 8 blocks of 8x8 tiles
+	int block_size = 360 / BALL_ANIM_INCREMENT;
+
+	// All indices must be 0..7, if any equals 8, "modulo" it back to 0
+	pitch_index = pitch_index != block_size ? pitch_index : 0;
+	yaw_index	= yaw_index != block_size ? yaw_index : 0;
+	roll_index	= roll_index != block_size ? roll_index : 0;
 
 	result.left = pitch_index * BALL_TILE_SIZE;
-	result.top  = yaw_index * BALL_TILE_SIZE + roll_index * (360 / BALL_ANIM_INCREMENT) * BALL_TILE_SIZE;
+	result.top  = yaw_index * BALL_TILE_SIZE + roll_index * block_size * BALL_TILE_SIZE;
 
 	return result;
 }

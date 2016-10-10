@@ -11,9 +11,16 @@ class Ball : public SceneObject
         explicit Ball(float radius);
         float getRadius() const;
 
-        virtual void setTexture(const std::shared_ptr<sf::Texture>& texture) override;
+        void setTexture(const std::shared_ptr<sf::Texture>& texture) override;
 
-		void update(float dt);
+		void update();
+
+		// Mostly temporary. May be replaced by some other 
+		// "accelerateAngular" function or something.
+		void rotate(sf::Vector3i angles);
+
+	protected:
+		void resetOrigin() override;
 
 	private:
 		sf::IntRect calcSpriteFrame() const;
