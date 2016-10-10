@@ -51,6 +51,7 @@ Game::Game()
 
 	m_Ball.setMass(100.f);
 	m_Ball.accelerate({0.f, 20.f, 0.f});
+	m_Ball.accelerateAngular({0.f, -10.f, 0.f});
 }
 
 Game::~Game()
