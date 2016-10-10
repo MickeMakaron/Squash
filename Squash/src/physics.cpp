@@ -117,3 +117,18 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
 
     return false;
 }
+
+bool handleCollision2(Ball& ball, const ScenePlane& plane)
+{
+	static const float COLLISION_FACTOR = 0.8f;
+	static const float FRICTION_FACTOR = 0.1f;
+
+	
+	// Collision point
+	sf::Vector3f vectorCP = plane.getNormal() * ball.getRadius();
+
+	sf::Vector3f velocityCP = ball.getVelocity() + cross(ballAngularVelocity, vectorCP);
+
+
+
+}
