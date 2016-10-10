@@ -75,7 +75,8 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
             // Roll condition true
             ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
 
-            ballAngularAcceleration = FRICTION_DIRECTION * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS) - ball.getAngularVelocity();
+            const sf::Vector3f BALL_ANGULAR_VELOCITY = ball.getAngularVelocity();
+            ballAngularAcceleration = cross(-LOA, FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS) - ball.getAngularVelocity();
 
             std::cout << "ROLL" << std::endl;
         }
