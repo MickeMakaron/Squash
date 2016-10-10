@@ -20,7 +20,7 @@ float Ball::getRadius() const
 void Ball::setTexture(const std::shared_ptr<sf::Texture>& texture)
 {
     SceneObject::setTexture(texture);
-	
+
 	//m_Sprite.setTexture(*texture);
 	update();
     //setSize(m_Radius, m_Radius);
@@ -31,27 +31,55 @@ void Ball::update()
 	m_Sprite.setTextureRect(calcSpriteFrame());
 }
 
-void Ball::rotate(sf::Vector3i angles)
+void Ball::rotate(sf::Vector3f angles)
 {
 	m_Rotation += angles;
-	if (m_Rotation.x >= 360)
-		m_Rotation.x %= 360;
-	if (m_Rotation.x < 0)
-		m_Rotation.x += 360;
+	while(m_Rotation.x > 360.f)
+        m_Rotation.x -= 360.f;
+	while(m_Rotation.x < 0)
+        m_Rotation.x += 360.f;
 
-	if (m_Rotation.y >= 360)
-		m_Rotation.y %= 360;
-	if (m_Rotation.y < 0)
-		m_Rotation.y += 360;
+	while(m_Rotation.y > 360.f)
+        m_Rotation.y -= 360.f;
+	while(m_Rotation.y < 0)
+        m_Rotation.y += 360.f;
 
-	if (m_Rotation.z >= 360)
-		m_Rotation.z %= 360;
-	if (m_Rotation.z < 0)
-		m_Rotation.z += 360;
+	while(m_Rotation.z > 360.f)
+        m_Rotation.z -= 360.f;
+	while(m_Rotation.z < 0)
+        m_Rotation.z += 360.f;
+//	if (m_Rotation.x >= 360)
+//		m_Rotation.x %= 360;
+//	if (m_Rotation.x < 0)
+//		m_Rotation.x += 360;
+//
+//	if (m_Rotation.y >= 360)
+//		m_Rotation.y %= 360;
+//	if (m_Rotation.y < 0)
+//		m_Rotation.y += 360;
+//
+//	if (m_Rotation.z >= 360)
+//		m_Rotation.z %= 360;
+//	if (m_Rotation.z < 0)
+//		m_Rotation.z += 360;
 
 
 	update();
 }
+
+void Ball::rotate(float dt)
+{
+    sf::Vector3f angV(0.f, 0.f, 10.f);
+    sf::Vector3f rotation(100.f * dt, 0, 0);
+    rotate(rotation);
+
+}
+
+void Ball::accelerateAngular(sf::Vector3f angularAcceleration)
+{
+    m_AngularVelocity += angularAcceleration;
+}
+
 
 void Ball::resetOrigin()
 {
