@@ -23,22 +23,18 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
         const sf::Vector3f BALL_VELOCITY = ball.getVelocity() + BALL_SPIN_VELOCITY;
 
         const sf::Vector3f PLANE_VELOCITY = plane.getVelocity();
-        if(length2(BALL_VELOCITY - PLANE_VELOCITY) < 1.f)
-        {
-            ball.accelerate(-ball.getVelocity());
-            return true;
-        }
+
 
         const float BALL_MASS = ball.getMass();
         const float PLANE_MASS = plane.getMass();
-        const sf::Vector3f FRICTION_DIRECTION_UNNORMALIZED = cross(cross(BALL_VELOCITY - PLANE_VELOCITY, LOA), LOA);
-        const sf::Vector3f FRICTION_DIRECTION = length2(FRICTION_DIRECTION_UNNORMALIZED) < 0.01f ? sf::Vector3f() : normalize(FRICTION_DIRECTION_UNNORMALIZED);
+        const sf::Vector3f FRICTION_DIRECTION = normalize(cross(cross(BALL_VELOCITY - PLANE_VELOCITY, LOA), LOA));
 
         const float BALL_LOA_SPEED_PRE = dot(BALL_VELOCITY, LOA);
         const float PLANE_LOA_SPEED_PRE = dot(PLANE_VELOCITY, LOA);
 
-        const float BALL_LOA_SPEED_POST
-            = BALL_LOA_SPEED_PRE * ((BALL_MASS - COLLISION_FACTOR * PLANE_MASS) / (BALL_MASS + PLANE_MASS))
+        const float BALL_LOA_SPEED_POST = plane.isMassive() ?
+              -COLLISION_FACTOR * BALL_LOA_SPEED_PRE
+            : BALL_LOA_SPEED_PRE * ((BALL_MASS - COLLISION_FACTOR * PLANE_MASS) / (BALL_MASS + PLANE_MASS))
             + PLANE_LOA_SPEED_PRE * ((1 + COLLISION_FACTOR) * PLANE_MASS / (BALL_MASS + PLANE_MASS));
 
         const float BALL_LOA_SPEED_DELTA = BALL_LOA_SPEED_POST - BALL_LOA_SPEED_PRE;
@@ -59,7 +55,7 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
 
         sf::Vector3f ballAcceleration(0.f, 0.f, 0.f);
         sf::Vector3f ballAngularAcceleration(0.f, 0.f, 0.f);
-        if(BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL < BALL_FRICTION_DIRECTION_SPEED_POST_ROLL)
+        if(std::fabs(BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL) < std::fabs(BALL_FRICTION_DIRECTION_SPEED_POST_ROLL))
         {
             // Roll condition false
             ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL;
@@ -76,12 +72,18 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
             ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
 
             const sf::Vector3f BALL_ANGULAR_VELOCITY = ball.getAngularVelocity();
-            ballAngularAcceleration = cross(-LOA, FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS) - ball.getAngularVelocity();
+            const sf::Vector3f NEW_FRICTION_DIRECTION = normalize(BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL);
+            ballAngularAcceleration = cross(-LOA, NEW_FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS) - ball.getAngularVelocity();
 
+            if(ballAngularAcceleration.y < 0.f)
+                int ferp  = 0;
             std::cout << "ROLL" << std::endl;
         }
 
-
+        std::cout << "Pre linear v: " << ball.getVelocity().x << ", " << ball.getVelocity().y << ", " << ball.getVelocity().z << std::endl;
+        std::cout << "Pre angular v: " << ball.getAngularVelocity().x << ", " << ball.getAngularVelocity().y << ", " << ball.getAngularVelocity().z << std::endl;
+        std::cout << "Linear Acc: " << ballAcceleration.x << ", " << ballAcceleration.y << ", " << ballAcceleration.z << std::endl;
+        std::cout << "Angular Acc: " << ballAngularAcceleration.x << ", " << ballAngularAcceleration.y << ", " << ballAngularAcceleration.z << std::endl;
         ball.accelerate(ballAcceleration);
         ball.accelerateAngular(ballAngularAcceleration);
 
@@ -101,9 +103,9 @@ float calcExitSpeed_LineOfAction(float v, float e)
 	return -e*v;
 }
 
-float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float µ)
+float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float friction)
 {
-	return v_n + (u_p - v_p) * µ;
+	return v_n + (u_p - v_p) * friction;
 }
 
 float calcExitSpeed_Friction_WithRoll(float v_n)
@@ -121,7 +123,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 	// If close enough, COLLIDE!
 	if(std::fabs(distance) <= ball.getRadius())
 	{
-		
+
 		// CP = Collision point
 		sf::Vector3f vectorCP = plane.getNormal() * (-ball.getRadius());
 		sf::Vector3f velocityAtCP = ball.getVelocity() + cross(ball.getAngularVelocity(), vectorCP);
@@ -161,8 +163,8 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 			//if(length2(vectorFriction) >= 0.01)
 				resultingAngularVelocity = 5 * FRICTION_FACTOR * (post_vel_p - pre_vel_p) / (2 * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
 
-			std::cout << "-----------\nNO ROLL!\nVel: (" << 
-				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" << 
+			std::cout << "-----------\nNO ROLL!\nVel: (" <<
+				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
 		}
 		else
@@ -170,7 +172,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 			// Roll condition!
 
 			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_Roll;
-			
+
 			// The cross is an assumption at this point!
 			resultingAngularVelocity = post_vel_n_Roll / ball.getRadius() * normalize(cross(resultingVelocity, lineOfAction)); 
 
