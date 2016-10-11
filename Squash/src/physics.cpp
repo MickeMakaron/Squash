@@ -180,7 +180,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_Roll;
 
 			// The cross is an assumption at this point!
-			resultingAngularVelocity = (pre_vel_n - post_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, lineOfAction)); 
+			resultingAngularVelocity = (pre_vel_n - post_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction)); 
 
 			std::cout << "-----------\nROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
