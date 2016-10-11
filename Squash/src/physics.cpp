@@ -60,9 +60,10 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
             // Roll condition false
             ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL;
 
-            if(length2(FRICTION_DIRECTION) > 0.01f)
+//            if(length2(FRICTION_DIRECTION) > 0.01f)
             {
-                ballAngularAcceleration = cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS)) - ball.getAngularVelocity();
+                ballAngularAcceleration += cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS));
+//                ballAngularAcceleration = cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS)) - ball.getAngularVelocity();
             }
             std::cout << "NO ROLL" << std::endl;
         }
@@ -73,15 +74,20 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
 
             const sf::Vector3f BALL_ANGULAR_VELOCITY = ball.getAngularVelocity();
             const sf::Vector3f NEW_FRICTION_DIRECTION = normalize(BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL);
-            ballAngularAcceleration = cross(-LOA, NEW_FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS) - ball.getAngularVelocity();
+//            ballAngularAcceleration = cross(-LOA, NEW_FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS) - ball.getAngularVelocity();
+            ballAngularAcceleration += cross(-LOA, FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL / BALL_RADIUS);
 
-            if(ballAngularAcceleration.y < 0.f)
-                int ferp  = 0;
+//            if(ballAngularAcceleration.y < 0.f)
+//                int ferp  = 0;
+//            if((ball.getVelocity().x + ballAcceleration.x) > 0.f)
+            if((ball.getAngularVelocity().y + ballAngularAcceleration.y) > 0.f)
+                int flerp = 0;
             std::cout << "ROLL" << std::endl;
         }
 
         std::cout << "Pre linear v: " << ball.getVelocity().x << ", " << ball.getVelocity().y << ", " << ball.getVelocity().z << std::endl;
         std::cout << "Pre angular v: " << ball.getAngularVelocity().x << ", " << ball.getAngularVelocity().y << ", " << ball.getAngularVelocity().z << std::endl;
+        std::cout << "Pre surface v: " << BALL_VELOCITY.x << ", " << BALL_VELOCITY.y << ", " << BALL_VELOCITY.z << std::endl;
         std::cout << "Linear Acc: " << ballAcceleration.x << ", " << ballAcceleration.y << ", " << ballAcceleration.z << std::endl;
         std::cout << "Angular Acc: " << ballAngularAcceleration.x << ", " << ballAngularAcceleration.y << ", " << ballAngularAcceleration.z << std::endl;
         ball.accelerate(ballAcceleration);
