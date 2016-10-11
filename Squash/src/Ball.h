@@ -35,7 +35,7 @@ class Ball : public SceneObject
 		sf::Vector3f m_Rotation;
 
 		const unsigned int BALL_TILE_SIZE = 64U;
-		const unsigned int BALL_ANIM_INCREMENT = 45U;
+		const float BALL_ANIM_INCREMENT = 45.f / 2.f;
 };
 
 #endif //BALL_H

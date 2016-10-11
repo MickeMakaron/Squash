@@ -47,11 +47,11 @@ Game::Game()
 
 	m_Tile.setPosition({0 * TILE_SIZE, 0, 0});
 	m_Player.setPosition({0, 0, 0});
-	m_Ball.setPosition({0, 0, 60.f});
+	m_Ball.setPosition({0, -60, 40.f});
 
 	m_Ball.setMass(100.f);
-	m_Ball.accelerate({0.f, 20.f, 0.f});
-	m_Ball.accelerateAngular({0.f, -10.f, 0.f});
+	m_Ball.accelerate({0.f, 100.f, 0.f});
+	//m_Ball.accelerateAngular({0.f, -10.f, 0.f});
 }
 
 Game::~Game()

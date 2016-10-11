@@ -96,9 +96,9 @@ sf::IntRect Ball::calcSpriteFrame() const
 {
 	sf::IntRect result(0, 0, BALL_TILE_SIZE, BALL_TILE_SIZE);
 
-	int pitch_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.x) / static_cast<float>(BALL_ANIM_INCREMENT)));
-	int yaw_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.y) / static_cast<float>(BALL_ANIM_INCREMENT)));
-	int roll_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.z) / static_cast<float>(BALL_ANIM_INCREMENT)));
+	int pitch_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.x) / BALL_ANIM_INCREMENT));
+	int yaw_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.y) / BALL_ANIM_INCREMENT));
+	int roll_index	= static_cast<int>(roundf(static_cast<float>(m_Rotation.z) / BALL_ANIM_INCREMENT));
 
 	// The amount of tiles per "block", as in, if block_size is 8, then there are 8 blocks of 8x8 tiles
 	int block_size = 360 / BALL_ANIM_INCREMENT;
