@@ -51,7 +51,7 @@ Game::Game()
 
 	m_Ball.setMass(100.f);
 	m_Ball.accelerate({0.f, 100.f, 0.f});
-	//m_Ball.accelerateAngular({0.f, -10.f, 0.f});
+	m_Ball.accelerateAngular({0.f, -2.f, 0.f});
 }
 
 Game::~Game()
@@ -127,7 +127,7 @@ void Game::handleEvents()
 			if (event.key.code == sf::Keyboard::P)
 				paused = !paused;
 			break;
-			
+
 		}
 
 	}
@@ -193,14 +193,14 @@ void Game::update(float dt)
     plane.setMass(0.f);
     wall.setMass(0.f);
 
-    if(handleCollision2(m_Ball, plane))
-    {
-        isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
-        if(isBallRolling)
-            m_Ball.accelerate({0.f, 0.f, -m_Ball.getVelocity().z});
-    }
-    else //if(!isBallRolling)
         m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
+    if(handleCollision(m_Ball, plane))
+    {
+//        isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
+//        if(isBallRolling)
+//            m_Ball.accelerate({0.f, 0.f, -m_Ball.getVelocity().z});
+    }
+//    else //if(!isBallRolling)
 
 
 
