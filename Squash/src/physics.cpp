@@ -101,9 +101,9 @@ float calcExitSpeed_LineOfAction(float v, float e)
 	return -e*v;
 }
 
-float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float µ)
+float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float friction)
 {
-	return v_n + (u_p - v_p) * µ;
+	return v_n + (u_p - v_p) * friction;
 }
 
 float calcExitSpeed_Friction_WithRoll(float v_n)
@@ -121,7 +121,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 	// If close enough, COLLIDE!
 	if(std::fabs(distance) <= ball.getRadius())
 	{
-		
+
 		// CP = Collision point
 		sf::Vector3f vectorCP = plane.getNormal() * (-ball.getRadius());
 		sf::Vector3f velocityAtCP = ball.getVelocity() + cross(ball.getAngularVelocity(), vectorCP);
@@ -161,8 +161,8 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 			//if(length2(vectorFriction) >= 0.01)
 				resultingAngularVelocity = 5 * FRICTION_FACTOR * (post_vel_p - pre_vel_p) / (2 * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
 
-			std::cout << "-----------\nNO ROLL!\nVel: (" << 
-				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" << 
+			std::cout << "-----------\nNO ROLL!\nVel: (" <<
+				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
 		}
 		else
@@ -170,9 +170,9 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 			// Roll condition!
 
 			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_Roll;
-			
+
 			// The cross is an assumption at this point!
-			resultingAngularVelocity = post_vel_n_Roll / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction)); 
+			resultingAngularVelocity = post_vel_n_Roll / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction));
 
 			std::cout << "-----------\nROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
