@@ -15,6 +15,8 @@ class Ball : public SceneObject
 
 		void update();
 		void rotate(float dt);
+		bool isGrounded() const;
+		void setGrounded(bool flag);
 
 		// Mostly temporary. May be replaced by some other
 		// "accelerateAngular" function or something.
@@ -33,6 +35,7 @@ class Ball : public SceneObject
 
         sf::Vector3f m_AngularVelocity;
 		sf::Vector3f m_Rotation;
+		bool m_IsGrounded;
 
 		const unsigned int BALL_TILE_SIZE = 64U;
 		const float BALL_ANIM_INCREMENT = 45.f / 2.f;

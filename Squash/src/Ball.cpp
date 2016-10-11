@@ -113,3 +113,13 @@ sf::IntRect Ball::calcSpriteFrame() const
 
 	return result;
 }
+
+bool Ball::isGrounded() const
+{
+    return m_IsGrounded;
+}
+
+void Ball::setGrounded(bool flag)
+{
+    m_IsGrounded = flag;
+}
