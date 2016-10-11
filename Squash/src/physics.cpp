@@ -154,7 +154,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 
 		sf::Vector3f resultingVelocity;
 		sf::Vector3f resultingAngularVelocity;
-		if (post_vel_n_NoRoll < post_vel_n_Roll)
+		if (fabs(post_vel_n_NoRoll) < fabs(post_vel_n_Roll))
 		{
 			// No roll condition!
 
@@ -174,7 +174,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_Roll;
 
 			// The cross is an assumption at this point!
-			resultingAngularVelocity = post_vel_n_Roll / ball.getRadius() * normalize(cross(resultingVelocity, lineOfAction)); 
+			resultingAngularVelocity = (pre_vel_n - post_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, lineOfAction)); 
 
 			std::cout << "-----------\nROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
