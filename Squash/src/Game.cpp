@@ -197,9 +197,26 @@ void Game::update(float dt)
     plane.setMass(0.f);
     wall.setMass(0.f);
 
-        m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
-    if(handleCollision(m_Ball, plane))
+
+    if(m_Ball.isGrounded())
     {
+        handleContact(m_Ball, plane, dt);
+    }
+    else
+    {
+        float ballPreviousSpeedZ = std::fabs(m_Ball.getVelocity().z);
+        m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
+
+        if(handleCollision(m_Ball, plane))
+        {
+            float ballSpeedZ = std::fabs(m_Ball.getVelocity().z);
+            std::cout << "dZ: " << ballSpeedZ - ballPreviousSpeedZ << std::endl;
+            if(std::fabs(ballSpeedZ - ballPreviousSpeedZ) < 2.f)
+            {
+                m_Ball.setGrounded(true);
+                m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z});
+            }
+        }
 //        isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
 //        if(isBallRolling)
 //            m_Ball.accelerate({0.f, 0.f, -m_Ball.getVelocity().z});

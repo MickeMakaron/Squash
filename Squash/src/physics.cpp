@@ -6,6 +6,28 @@
 
 #include <iostream>
 
+bool handleContact(Ball& ball, const ScenePlane& plane, float dt)
+{
+    static const float FRICTION_FACTOR = 0.5f;
+
+    const sf::Vector3f BALL_CENTER = ball.getPosition();
+    const float BALL_RADIUS = ball.getRadius();
+    const sf::Vector3f LOA = plane.getNormal();
+    const float DISTANCE = dot(BALL_CENTER, LOA) - plane.getD();
+    if(std::fabs(DISTANCE) > BALL_RADIUS)
+        return false;
+
+    const sf::Vector3f BALL_SPIN_VELOCITY = cross(LOA, ball.getAngularVelocity()) * BALL_RADIUS;
+    const sf::Vector3f BALL_VELOCITY = ball.getVelocity() + BALL_SPIN_VELOCITY;
+
+    const sf::Vector3f PLANE_VELOCITY = plane.getVelocity();
+
+    const sf::Vector3f FRICTION_DIRECTION = normalize(cross(cross(BALL_VELOCITY - PLANE_VELOCITY, LOA), LOA));
+
+    ball.accelerate(-ball.getVelocity() * FRICTION_FACTOR * dt);
+    ball.accelerateAngular(-ball.getAngularVelocity() * FRICTION_FACTOR * dt);
+}
+
 bool handleCollision(Ball& ball, const ScenePlane& plane)
 {
     static const float COLLISION_FACTOR = 0.6f;
@@ -15,88 +37,86 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
     const float BALL_RADIUS = ball.getRadius();
     const sf::Vector3f LOA = plane.getNormal();
     const float DISTANCE = dot(BALL_CENTER, LOA) - plane.getD();
-    if(std::fabs(DISTANCE) < BALL_RADIUS)
+    if(std::fabs(DISTANCE) > BALL_RADIUS)
+        return false;
+
+    ball.move(LOA * (BALL_RADIUS - DISTANCE));
+
+    const sf::Vector3f BALL_SPIN_VELOCITY = cross(LOA, ball.getAngularVelocity()) * BALL_RADIUS;
+    const sf::Vector3f BALL_VELOCITY = ball.getVelocity() + BALL_SPIN_VELOCITY;
+
+    const sf::Vector3f PLANE_VELOCITY = plane.getVelocity();
+
+
+    const float BALL_MASS = ball.getMass();
+    const float PLANE_MASS = plane.getMass();
+    const sf::Vector3f FRICTION_DIRECTION = normalize(cross(cross(BALL_VELOCITY - PLANE_VELOCITY, LOA), LOA));
+
+    const float BALL_LOA_SPEED_PRE = dot(BALL_VELOCITY, LOA);
+    const float PLANE_LOA_SPEED_PRE = dot(PLANE_VELOCITY, LOA);
+
+    const float BALL_LOA_SPEED_POST = plane.isMassive() ?
+          -COLLISION_FACTOR * BALL_LOA_SPEED_PRE
+        : BALL_LOA_SPEED_PRE * ((BALL_MASS - COLLISION_FACTOR * PLANE_MASS) / (BALL_MASS + PLANE_MASS))
+        + PLANE_LOA_SPEED_PRE * ((1 + COLLISION_FACTOR) * PLANE_MASS / (BALL_MASS + PLANE_MASS));
+
+    const float BALL_LOA_SPEED_DELTA = BALL_LOA_SPEED_POST - BALL_LOA_SPEED_PRE;
+
+    // We don't care about the plane's post-collision velocity.
+
+
+    const float BALL_FRICTION_DIRECTION_SPEED_PRE = dot(BALL_VELOCITY, FRICTION_DIRECTION);
+    const sf::Vector3f BALL_FRICTION_DIRECTION_VELOCITY_PRE = FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_PRE;
+
+    const float BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL = BALL_LOA_SPEED_DELTA * FRICTION_FACTOR;
+    const sf::Vector3f BALL_FRICTION_DIRECTION_VELOCITY_POST_NO_ROLL = BALL_FRICTION_DIRECTION_VELOCITY_PRE + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL;
+    const float BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL = length(BALL_FRICTION_DIRECTION_VELOCITY_POST_NO_ROLL);
+
+    const float BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL = ((5.f / 7.f) - 1.f) * BALL_FRICTION_DIRECTION_SPEED_PRE;
+    const sf::Vector3f BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL = BALL_FRICTION_DIRECTION_VELOCITY_PRE + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
+    const float BALL_FRICTION_DIRECTION_SPEED_POST_ROLL = length(BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL);
+
+    sf::Vector3f ballAcceleration(0.f, 0.f, 0.f);
+    sf::Vector3f ballAngularAcceleration(0.f, 0.f, 0.f);
+    if(std::fabs(BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL) < std::fabs(BALL_FRICTION_DIRECTION_SPEED_POST_ROLL))
     {
-        ball.move(LOA * (BALL_RADIUS - DISTANCE));
-
-        const sf::Vector3f BALL_SPIN_VELOCITY = cross(LOA, ball.getAngularVelocity()) * BALL_RADIUS;
-        const sf::Vector3f BALL_VELOCITY = ball.getVelocity() + BALL_SPIN_VELOCITY;
-
-        const sf::Vector3f PLANE_VELOCITY = plane.getVelocity();
-
-
-        const float BALL_MASS = ball.getMass();
-        const float PLANE_MASS = plane.getMass();
-        const sf::Vector3f FRICTION_DIRECTION = normalize(cross(cross(BALL_VELOCITY - PLANE_VELOCITY, LOA), LOA));
-
-        const float BALL_LOA_SPEED_PRE = dot(BALL_VELOCITY, LOA);
-        const float PLANE_LOA_SPEED_PRE = dot(PLANE_VELOCITY, LOA);
-
-        const float BALL_LOA_SPEED_POST = plane.isMassive() ?
-              -COLLISION_FACTOR * BALL_LOA_SPEED_PRE
-            : BALL_LOA_SPEED_PRE * ((BALL_MASS - COLLISION_FACTOR * PLANE_MASS) / (BALL_MASS + PLANE_MASS))
-            + PLANE_LOA_SPEED_PRE * ((1 + COLLISION_FACTOR) * PLANE_MASS / (BALL_MASS + PLANE_MASS));
-
-        const float BALL_LOA_SPEED_DELTA = BALL_LOA_SPEED_POST - BALL_LOA_SPEED_PRE;
-
-        // We don't care about the plane's post-collision velocity.
-
-
-        const float BALL_FRICTION_DIRECTION_SPEED_PRE = dot(BALL_VELOCITY, FRICTION_DIRECTION);
-        const sf::Vector3f BALL_FRICTION_DIRECTION_VELOCITY_PRE = FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_PRE;
-
-        const float BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL = BALL_LOA_SPEED_DELTA * FRICTION_FACTOR;
-        const sf::Vector3f BALL_FRICTION_DIRECTION_VELOCITY_POST_NO_ROLL = BALL_FRICTION_DIRECTION_VELOCITY_PRE + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL;
-        const float BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL = length(BALL_FRICTION_DIRECTION_VELOCITY_POST_NO_ROLL);
-
-        const float BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL = ((5.f / 7.f) - 1.f) * BALL_FRICTION_DIRECTION_SPEED_PRE;
-        const sf::Vector3f BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL = BALL_FRICTION_DIRECTION_VELOCITY_PRE + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
-        const float BALL_FRICTION_DIRECTION_SPEED_POST_ROLL = length(BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL);
-
-        sf::Vector3f ballAcceleration(0.f, 0.f, 0.f);
-        sf::Vector3f ballAngularAcceleration(0.f, 0.f, 0.f);
-        if(std::fabs(BALL_FRICTION_DIRECTION_SPEED_POST_NO_ROLL) < std::fabs(BALL_FRICTION_DIRECTION_SPEED_POST_ROLL))
-        {
-            // Roll condition false
-            ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL;
+        // Roll condition false
+        ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_NO_ROLL;
 
 //            if(length2(FRICTION_DIRECTION) > 0.01f)
-            {
-                ballAngularAcceleration += cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS));
-//                ballAngularAcceleration = cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS)) - ball.getAngularVelocity();
-            }
-            std::cout << "NO ROLL" << std::endl;
-        }
-        else
         {
-            // Roll condition true
-            ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
+            ballAngularAcceleration += cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS));
+//                ballAngularAcceleration = cross(-LOA, FRICTION_DIRECTION) * (FRICTION_FACTOR * BALL_LOA_SPEED_DELTA / (0.4f  * BALL_RADIUS)) - ball.getAngularVelocity();
+        }
+        std::cout << "NO ROLL" << std::endl;
+    }
+    else
+    {
+        // Roll condition true
+        ballAcceleration += LOA * BALL_LOA_SPEED_DELTA + FRICTION_DIRECTION * BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL;
 
-            const sf::Vector3f BALL_ANGULAR_VELOCITY = ball.getAngularVelocity();
-            const sf::Vector3f NEW_FRICTION_DIRECTION = normalize(BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL);
+        const sf::Vector3f BALL_ANGULAR_VELOCITY = ball.getAngularVelocity();
+        const sf::Vector3f NEW_FRICTION_DIRECTION = normalize(BALL_FRICTION_DIRECTION_VELOCITY_POST_ROLL);
 //            ballAngularAcceleration = cross(-LOA, NEW_FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_POST_ROLL / BALL_RADIUS) - ball.getAngularVelocity();
-            ballAngularAcceleration += cross(-LOA, FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL / BALL_RADIUS);
+        ballAngularAcceleration += cross(-LOA, FRICTION_DIRECTION) * (BALL_FRICTION_DIRECTION_SPEED_DELTA_ROLL / BALL_RADIUS);
 
 //            if(ballAngularAcceleration.y < 0.f)
 //                int ferp  = 0;
 //            if((ball.getVelocity().x + ballAcceleration.x) > 0.f)
-            if((ball.getAngularVelocity().y + ballAngularAcceleration.y) > 0.f)
-                int flerp = 0;
-            std::cout << "ROLL" << std::endl;
-        }
-
-        std::cout << "Pre linear v: " << ball.getVelocity().x << ", " << ball.getVelocity().y << ", " << ball.getVelocity().z << std::endl;
-        std::cout << "Pre angular v: " << ball.getAngularVelocity().x << ", " << ball.getAngularVelocity().y << ", " << ball.getAngularVelocity().z << std::endl;
-        std::cout << "Pre surface v: " << BALL_VELOCITY.x << ", " << BALL_VELOCITY.y << ", " << BALL_VELOCITY.z << std::endl;
-        std::cout << "Linear Acc: " << ballAcceleration.x << ", " << ballAcceleration.y << ", " << ballAcceleration.z << std::endl;
-        std::cout << "Angular Acc: " << ballAngularAcceleration.x << ", " << ballAngularAcceleration.y << ", " << ballAngularAcceleration.z << std::endl;
-        ball.accelerate(ballAcceleration);
-        ball.accelerateAngular(ballAngularAcceleration);
-
-        return true;
+        if((ball.getAngularVelocity().y + ballAngularAcceleration.y) > 0.f)
+            int flerp = 0;
+        std::cout << "ROLL" << std::endl;
     }
 
-    return false;
+    std::cout << "Pre linear v: " << ball.getVelocity().x << ", " << ball.getVelocity().y << ", " << ball.getVelocity().z << std::endl;
+    std::cout << "Pre angular v: " << ball.getAngularVelocity().x << ", " << ball.getAngularVelocity().y << ", " << ball.getAngularVelocity().z << std::endl;
+    std::cout << "Pre surface v: " << BALL_VELOCITY.x << ", " << BALL_VELOCITY.y << ", " << BALL_VELOCITY.z << std::endl;
+    std::cout << "Linear Acc: " << ballAcceleration.x << ", " << ballAcceleration.y << ", " << ballAcceleration.z << std::endl;
+    std::cout << "Angular Acc: " << ballAngularAcceleration.x << ", " << ballAngularAcceleration.y << ", " << ballAngularAcceleration.z << std::endl;
+    ball.accelerate(ballAcceleration);
+    ball.accelerateAngular(ballAngularAcceleration);
+
+    return true;
 }
 
 float calcExitSpeed_LineOfAction(float m1, float m2, float v1, float v2, float e)
