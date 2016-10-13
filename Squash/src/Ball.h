@@ -4,6 +4,7 @@
 #define BALL_H
 
 #include "SceneObject.h"
+#include <SFML/Graphics/CircleShape.hpp>
 
 class Ball : public SceneObject
 {
@@ -24,7 +25,11 @@ class Ball : public SceneObject
 		void accelerateAngular(sf::Vector3f angularAcceleration);
 		sf::Vector3f getAngularVelocity() const;
 
-	protected:
+		void move(const sf::Vector3f& delta) override;
+		void move(float dt) override;
+
+protected:
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		void resetOrigin() override;
 
 	private:
@@ -36,6 +41,8 @@ class Ball : public SceneObject
         sf::Vector3f m_AngularVelocity;
 		sf::Vector3f m_Rotation;
 		bool m_IsGrounded;
+
+		sf::CircleShape m_Shadow;
 
 		const unsigned int BALL_TILE_SIZE = 64U;
 		const float BALL_ANIM_INCREMENT = 45.f / 2.f;

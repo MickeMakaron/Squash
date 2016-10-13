@@ -23,7 +23,7 @@ Game::Game()
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
-    , m_Ball(20.f)
+    , m_Ball(13.f)
 {
     using namespace Constants;
 	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
@@ -207,7 +207,7 @@ void Game::update(float dt)
         float ballPreviousSpeedZ = std::fabs(m_Ball.getVelocity().z);
         m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
 
-        if(handleCollision(m_Ball, plane))
+        if(handleCollision2(m_Ball, plane))
         {
             float ballSpeedZ = std::fabs(m_Ball.getVelocity().z);
             std::cout << "dZ: " << ballSpeedZ - ballPreviousSpeedZ << std::endl;
