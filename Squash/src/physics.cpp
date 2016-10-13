@@ -141,10 +141,16 @@ float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float frict
 	return v_n + (u_p - v_p) * friction;
 }
 
-float calcExitSpeed_Friction_WithRoll(float v_n, float v_n_spin)
+float calcExitSpeed_Friction_WithRoll(sf::Vector3f v_plane_pre, sf::Vector3f r, sf::Vector3f w_pre, sf::Vector3f friction_direction)
 {
-	return 5.f*v_n/7.f + 2.f*v_n_spin/7.f;
+	sf::Vector3f speed_post = v_plane_pre + (2.f / 7.f) * length(v_plane_pre - cross(r, w_pre)) * friction_direction;
+	return dot(speed_post, friction_direction);
 }
+
+//float calcExitSpeed_Friction_WithRoll(float v_n, float v_n_spin)
+//{
+//	return 9.f*v_n/7.f + 2.f*v_n_spin/7.f;
+//}
 
 bool handleCollision2(Ball& ball, const ScenePlane& plane)
 {
@@ -192,7 +198,8 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 		// We must compare the resulting speed of both Roll and No Roll conditions
 		// to find which gives the smallest result (which is the one we want)
 		float post_vel_n_NoRoll = calcExitSpeed_Friction_NoRoll(pre_vel_n, post_vel_p, pre_vel_p, FRICTION_FACTOR);
-		float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(pre_vel_n, dot(spinVelocityAtCP, vectorFriction));
+		float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(ball.getVelocity() + plane.getNormal() * fabs(pre_vel_p), -plane.getNormal() * ball.getRadius(), ball.getAngularVelocity(), vectorFriction);
+		//float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(pre_vel_n, dot(spinVelocityAtCP, vectorFriction));
 
 		sf::Vector3f resultingVelocity;
 		sf::Vector3f resultingAngularVelocity;
@@ -200,7 +207,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 		{
 			// No roll condition!
 
-			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_NoRoll;
+			resultingVelocity = lineOfAction * (post_vel_p - pre_vel_p) + vectorFriction * (pre_vel_n - post_vel_n_NoRoll);
 
 			//if(length2(vectorFriction) >= 0.01)
 				resultingAngularVelocity = 5.f * FRICTION_FACTOR * (post_vel_p - pre_vel_p) / (2.f * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
@@ -213,7 +220,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 		{
 			// Roll condition!
 
-			resultingVelocity = lineOfAction * post_vel_p + vectorFriction * post_vel_n_Roll;
+			resultingVelocity = lineOfAction * (post_vel_p - pre_vel_p) + vectorFriction * (pre_vel_n - post_vel_n_Roll);
 
 			// The cross is an assumption at this point!
 			resultingAngularVelocity = (pre_vel_n - post_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction)); 
@@ -224,7 +231,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 		}
 
 
-		ball.accelerate(resultingVelocity - ball.getVelocity());
+		ball.accelerate(resultingVelocity);
 		ball.accelerateAngular(resultingAngularVelocity);
 
 		return true;

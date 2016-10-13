@@ -51,7 +51,7 @@ Game::Game()
 
 	m_Ball.setMass(100.f);
 	m_Ball.accelerate({0.f, 100.f, 0.f});
-	m_Ball.accelerateAngular({0.f, -2.f, 0.f});
+	m_Ball.accelerateAngular({0.f, -5.f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
 		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
@@ -207,7 +207,7 @@ void Game::update(float dt)
         float ballPreviousSpeedZ = std::fabs(m_Ball.getVelocity().z);
         m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
 
-        if(handleCollision2(m_Ball, plane))
+        if(handleCollision(m_Ball, plane))
         {
             float ballSpeedZ = std::fabs(m_Ball.getVelocity().z);
             std::cout << "dZ: " << ballSpeedZ - ballPreviousSpeedZ << std::endl;
