@@ -5,6 +5,7 @@
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
+#include "Quaternion.h"
 
 const float PI = 3.14159f;
 
@@ -23,5 +24,9 @@ sf::Vector2f normalize(const sf::Vector2f& v);
 sf::Vector3f normalize(const sf::Vector3f& v);
 
 sf::Vector2f isometricProjection(const sf::Vector3f& v);
+
+Quaternion createRotationQuaternion(const sf::Vector3f& axis, float angle);
+sf::Vector3f rotate(const sf::Vector3f& p, const sf::Vector3f& axis, float angle);
+
 
 #endif //COMMON_MATH
