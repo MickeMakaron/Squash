@@ -70,3 +70,21 @@ sf::Vector2f isometricProjection(const sf::Vector3f& v)
 
 	return result;
 }
+
+Quaternion createRotationQuaternion(const sf::Vector3f& axis, float angle)
+{
+    Quaternion q;
+    q.r = cosf(angle / 2.f);
+    const float K = sinf(angle / 2.f);
+    q.x = axis.x * K;
+    q.y = axis.y * K;
+    q.z = axis.z * K;
+    return q;
+}
+
+sf::Vector3f rotate(const sf::Vector3f& p, const sf::Vector3f& axis, float angle)
+{
+    Quaternion q = createRotationQuaternion({axis.x, axis.y, axis.z}, angle);
+    Quaternion pRot = q * Quaternion(p.x, p.y, p.z) * ~q;
+    return {pRot.x, pRot.y, pRot.z};
+}
