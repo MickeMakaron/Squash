@@ -51,7 +51,7 @@ Game::Game()
 
 	m_Ball.setMass(100.f);
 	m_Ball.accelerate({0.f, 1.f, 0.f});
-	m_Ball.accelerateAngular({0.f, -0.1f, 0.f});
+	m_Ball.accelerateAngular({0.f, -0.5f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
 		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
