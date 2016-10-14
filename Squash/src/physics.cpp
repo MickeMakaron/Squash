@@ -126,36 +126,47 @@ bool handleCollision(Ball& ball, const ScenePlane& plane)
     return true;
 }
 
-float calcExitSpeed_LineOfAction(float m1, float m2, float v1, float v2, float e)
+float calcDeltaSpeed_LineOfAction(float m1, float m2, float v1, float v2, float e)
 {
-	return (m1 - e*m2) * v1 / (m1 + m2) + (1 + e)*m2 * v2 / (m1 + m2);
+	return (m1 - e*m2) * v1 / (m1 + m2) + (1 + e)*m2 * v2 / (m1 + m2) - v1;
 }
 
-float calcExitSpeed_LineOfAction(float v, float e)
+float calcDeltaSpeed_LineOfAction(float v, float e)
 {
-	return -e*v;
+	return -e*v - v;
 }
 
-float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float friction)
+float calcDeltaSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float friction)
 {
-	return v_n + (u_p - v_p) * friction;
+	return (u_p - v_p) * friction;
 }
 
-float calcExitSpeed_Friction_WithRoll(sf::Vector3f v_plane_pre, sf::Vector3f r, sf::Vector3f w_pre, sf::Vector3f friction_direction)
+float calcDeltaSpeed_Friction_WithRoll(sf::Vector3f v_plane_pre, sf::Vector3f r, sf::Vector3f w_pre, sf::Vector3f friction_direction)
 {
-	sf::Vector3f speed_post = v_plane_pre + (2.f / 7.f) * length(v_plane_pre - cross(r, w_pre)) * friction_direction;
-	return dot(speed_post, friction_direction);
+	return (2.f / 7.f) * length(v_plane_pre - cross(r, w_pre));
 }
+
+//float calcExitSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float friction)
+//{
+//	return v_n + (u_p - v_p) * friction;
+//}
+//
+//float calcExitSpeed_Friction_WithRoll(sf::Vector3f v_plane_pre, sf::Vector3f r, sf::Vector3f w_pre, sf::Vector3f friction_direction)
+//{
+//	sf::Vector3f speed_post = v_plane_pre + (2.f / 7.f) * length(v_plane_pre - cross(r, w_pre)) * friction_direction;
+//	return dot(speed_post, friction_direction);
+//}
 
 //float calcExitSpeed_Friction_WithRoll(float v_n, float v_n_spin)
 //{
 //	return 9.f*v_n/7.f + 2.f*v_n_spin/7.f;
 //}
 
-bool handleCollision2(Ball& ball, const ScenePlane& plane)
+bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 {
 	static const float COLLISION_FACTOR = 0.6f;
 	static const float FRICTION_FACTOR = 0.1f;
+	static const float FRICTION_FACTOR_ROLL = 0.05f;
 
 	float distance = dot(ball.getPosition(), plane.getNormal()) - plane.getD();
 
@@ -175,7 +186,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 		sf::Vector3f vectorFriction = cross(normalize(cross(velocityAtCP - plane.getVelocity(), lineOfAction)), lineOfAction);
 
 		// If the ball is pretty much already rolling, recalculate the normal
-		if (length2(vectorFriction) <= 1.0e-6)
+		if (length2(vectorFriction) <= 1.0e-6f)
 		{
 			vectorFriction = cross(normalize(cross(ball.getVelocity() - plane.getVelocity(), lineOfAction)), lineOfAction);
 		}
@@ -185,32 +196,92 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 		float pre_vel_n = dot(ball.getVelocity(), vectorFriction);
 
 		// (Future note: velocity of what, the ball itself or the collision point? Hmmm)
-		float post_vel_p;
+		float delta_vel_p;
 		if(plane.isMassive())
 		{
-			post_vel_p = calcExitSpeed_LineOfAction(pre_vel_p, COLLISION_FACTOR);
+			delta_vel_p = calcDeltaSpeed_LineOfAction(pre_vel_p, COLLISION_FACTOR);
 		}
 		else
 		{
-			post_vel_p = calcExitSpeed_LineOfAction(ball.getMass(), plane.getMass(), pre_vel_p, dot(plane.getVelocity(), lineOfAction), COLLISION_FACTOR);
+			delta_vel_p = calcDeltaSpeed_LineOfAction(ball.getMass(), plane.getMass(), pre_vel_p, dot(plane.getVelocity(), lineOfAction), COLLISION_FACTOR);
+		}
+
+		if (fabs(delta_vel_p) <= 1.0f && dot(lineOfAction, sf::Vector3f(0, 0, 1)) >= 0.9f)
+		{
+			delta_vel_p = -pre_vel_p;
+			ball.setGrounded(true);
+
+			sf::Vector3f v = ball.getVelocity() + plane.getNormal() * fabs(pre_vel_p);
+			sf::Vector3f r = -plane.getNormal() * ball.getRadius();
+			float slideTime = (2.f/7.f)*length(v - cross(r, ball.getAngularVelocity())) / (FRICTION_FACTOR * 9.82f);
+
+			float delta_vel_n;
+			sf::Vector3f resultingVelocity;
+			sf::Vector3f resultingAngularVelocity;
+
+			// If slideTime is greater than dt, keep sliding
+			if(slideTime > dt)
+			{
+				delta_vel_n = FRICTION_FACTOR * 9.82f * dt;
+				resultingAngularVelocity = cross(vectorFriction, lineOfAction) * 5.f * FRICTION_FACTOR * 9.82f / (2 * ball.getRadius()) * dt;
+
+				std::cout << "-----------\nCONTACT NO ROLL!\nVel: (" <<
+					resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
+					resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+			}
+			// Otherwise, start rolling!
+			else
+			{
+				// If the velocity is very small, we are practically stationary (this is to avoid having infinite tiny movements when the ball should be still)
+				if (length2(v) <= 1.0e-3f)
+				{
+					delta_vel_n = 0.f;
+					ball.accelerate(-v);
+					resultingAngularVelocity = -ball.getAngularVelocity();
+				}
+				else
+				{
+					vectorFriction = cross(normalize(cross(ball.getVelocity() - plane.getVelocity(), lineOfAction)), lineOfAction);
+
+					delta_vel_n = FRICTION_FACTOR_ROLL * 9.82f * dt;
+					resultingAngularVelocity = cross(vectorFriction, lineOfAction) * delta_vel_n / ball.getRadius() * dt;
+				}
+
+				std::cout << "-----------\nCONTACT ROLL!\nVel: (" <<
+					resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
+					resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+			}
+
+			resultingVelocity = vectorFriction * delta_vel_n;
+
+			ball.accelerate(resultingVelocity);
+			ball.accelerateAngular(resultingAngularVelocity);
+			return true;
+		}
+		else
+		{
+			ball.setGrounded(false);
 		}
 
 		// We must compare the resulting speed of both Roll and No Roll conditions
 		// to find which gives the smallest result (which is the one we want)
-		float post_vel_n_NoRoll = calcExitSpeed_Friction_NoRoll(pre_vel_n, post_vel_p, pre_vel_p, FRICTION_FACTOR);
-		float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(ball.getVelocity() + plane.getNormal() * fabs(pre_vel_p), -plane.getNormal() * ball.getRadius(), ball.getAngularVelocity(), vectorFriction);
+		float delta_vel_n_NoRoll = calcDeltaSpeed_Friction_NoRoll(pre_vel_n, delta_vel_p, pre_vel_p, FRICTION_FACTOR);
+		float delta_vel_n_Roll	 = calcDeltaSpeed_Friction_WithRoll(ball.getVelocity() + plane.getNormal() * fabs(pre_vel_p), -plane.getNormal() * ball.getRadius(), ball.getAngularVelocity(), vectorFriction);
+		//float post_vel_n_NoRoll = calcExitSpeed_Friction_NoRoll(pre_vel_n, post_vel_p, pre_vel_p, FRICTION_FACTOR);
+		//float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(ball.getVelocity() + plane.getNormal() * fabs(pre_vel_p), -plane.getNormal() * ball.getRadius(), ball.getAngularVelocity(), vectorFriction);
+		
 		//float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(pre_vel_n, dot(spinVelocityAtCP, vectorFriction));
 
 		sf::Vector3f resultingVelocity;
 		sf::Vector3f resultingAngularVelocity;
-		if (fabs(post_vel_n_NoRoll - pre_vel_n) < fabs(post_vel_n_Roll - pre_vel_n))
+		if (fabs(delta_vel_n_NoRoll) < fabs(delta_vel_n_Roll))
 		{
 			// No roll condition!
 
-			resultingVelocity = lineOfAction * (post_vel_p - pre_vel_p) + vectorFriction * (pre_vel_n - post_vel_n_NoRoll);
+			resultingVelocity = lineOfAction * (delta_vel_p) + vectorFriction * (delta_vel_n_NoRoll);
 
 			//if(length2(vectorFriction) >= 0.01)
-				resultingAngularVelocity = 5.f * FRICTION_FACTOR * (post_vel_p - pre_vel_p) / (2.f * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
+				resultingAngularVelocity = 5.f * FRICTION_FACTOR * (delta_vel_p) / (2.f * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
 
 			std::cout << "-----------\nNO ROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
@@ -220,10 +291,11 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane)
 		{
 			// Roll condition!
 
-			resultingVelocity = lineOfAction * (post_vel_p - pre_vel_p) + vectorFriction * (pre_vel_n - post_vel_n_Roll);
+			resultingVelocity = lineOfAction * (delta_vel_p) + vectorFriction * (delta_vel_n_Roll);
 
 			// The cross is an assumption at this point!
-			resultingAngularVelocity = (pre_vel_n - post_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction)); 
+			//resultingAngularVelocity = (delta_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction)); 
+			resultingAngularVelocity = cross(vectorFriction, lineOfAction) * (delta_vel_n_Roll) / ball.getRadius();
 
 			std::cout << "-----------\nROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
