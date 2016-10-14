@@ -50,8 +50,8 @@ Game::Game()
 	m_Ball.setPosition({0, 0, 0.5f});
 
 	m_Ball.setMass(1.f);
-	m_Ball.accelerate({0.f, 1.f, 0.f});
-	m_Ball.accelerateAngular({0.f, 0.f, 10.f});
+	m_Ball.accelerate({10.f, 10.f, 0.f});
+	m_Ball.accelerateAngular({0.f, 0.f, 20.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
 		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
@@ -193,9 +193,15 @@ void Game::update(float dt)
 
 
     ScenePlane plane({0.f, 0.f, 1.f}, 0);
-    ScenePlane wall({0.f, -1.f, 0.f}, -Constants::TILE_SIZE * 2.f);
+    ScenePlane wallFront({0.f, -1.f, 0.f}, -0.5f);
+    ScenePlane wallLeft({1.f, 0.f, 0.f}, -0.5f);
+    ScenePlane wallRight({-1.f, 0.f, 0.f}, -0.5f);
+    ScenePlane wallBack({0.f, 1.f, 0.f}, -0.5f);
     plane.setMass(0.f);
-    wall.setMass(0.f);
+    wallFront.setMass(0.f);
+    wallLeft.setMass(0.f);
+    wallRight.setMass(0.f);
+    wallBack.setMass(0.f);
 
 
     if(m_Ball.isGrounded() && false)
@@ -220,6 +226,11 @@ void Game::update(float dt)
             //    m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z});
             //}
         }
+
+        handleCollision2(m_Ball, wallBack, dt);
+        handleCollision2(m_Ball, wallFront, dt);
+        handleCollision2(m_Ball, wallLeft, dt);
+        handleCollision2(m_Ball, wallRight, dt);
 //        isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
 //        if(isBallRolling)
 //            m_Ball.accelerate({0.f, 0.f, -m_Ball.getVelocity().z});
