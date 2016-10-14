@@ -50,8 +50,8 @@ Game::Game()
 	m_Ball.setPosition({0, -60, 40.f});
 
 	m_Ball.setMass(100.f);
-	m_Ball.accelerate({0.f, 100.f, 0.f});
-	m_Ball.accelerateAngular({0.f, -2.f, 0.f});
+	m_Ball.accelerate({0.f, 1.f, 0.f});
+	m_Ball.accelerateAngular({0.f, -0.1f, 0.f});
 }
 
 Game::~Game()
@@ -201,7 +201,7 @@ void Game::update(float dt)
     else
     {
         float ballPreviousSpeedZ = std::fabs(m_Ball.getVelocity().z);
-        m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
+        m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
 
         if(handleCollision(m_Ball, plane))
         {
@@ -226,17 +226,17 @@ void Game::update(float dt)
     m_Ball.rotate(dt);
 
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-//		m_Ball.rotate({ 5,0,0 });
+//		m_Ball.rotate({ 0.05f,0,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-//		m_Ball.rotate({ -5,0,0 });
+//		m_Ball.rotate({ -0.05f,0,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-//		m_Ball.rotate({ 0,-5,0 });
+//		m_Ball.rotate({ 0,-0.05f,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-//		m_Ball.rotate({ 0,5,0 });
+//		m_Ball.rotate({ 0,0.05f,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-//		m_Ball.rotate({ 0,0,-5 });
+//		m_Ball.rotate({ 0,0,-0.05f });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-//		m_Ball.rotate({ 0,0,5 });
+//		m_Ball.rotate({ 0,0,0.05f });
 
 
 //    float ballZ = m_Ball.getPosition().z - m_Ball.getRadius();
