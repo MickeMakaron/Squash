@@ -95,6 +95,9 @@ sf::Vector3f rotate(const sf::Vector3f& p, const sf::Vector3f& axis, float angle
 Quaternion rotateTransform(const Quaternion& q, const sf::Vector3f& eulerAngle)
 {
     float angle = length(eulerAngle);
+    if(angle < 0.0001f && angle > -0.0001f)
+        return q;
+
     sf::Vector3f axis = eulerAngle / angle;
     Quaternion rot = createRotationQuaternion(axis, angle);
     return rot * q;
