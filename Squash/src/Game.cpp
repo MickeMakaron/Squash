@@ -232,17 +232,17 @@ void Game::update(float dt)
     m_Ball.rotate(dt);
 
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-//		m_Ball.rotate({ 5,0,0 });
+//		m_Ball.rotate({ 0.05f,0,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-//		m_Ball.rotate({ -5,0,0 });
+//		m_Ball.rotate({ -0.05f,0,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-//		m_Ball.rotate({ 0,-5,0 });
+//		m_Ball.rotate({ 0,-0.05f,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-//		m_Ball.rotate({ 0,5,0 });
+//		m_Ball.rotate({ 0,0.05f,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-//		m_Ball.rotate({ 0,0,-5 });
+//		m_Ball.rotate({ 0,0,-0.05f });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-//		m_Ball.rotate({ 0,0,5 });
+//		m_Ball.rotate({ 0,0,0.05f });
 
 
 //    float ballZ = m_Ball.getPosition().z - m_Ball.getRadius();

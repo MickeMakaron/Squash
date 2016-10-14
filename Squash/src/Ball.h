@@ -4,6 +4,8 @@
 #define BALL_H
 
 #include "SceneObject.h"
+#include "Quaternion.h"
+
 #include <SFML/Graphics/CircleShape.hpp>
 
 class Ball : public SceneObject
@@ -41,6 +43,7 @@ protected:
         sf::Vector3f m_AngularVelocity;
 		sf::Vector3f m_Rotation;
 		bool m_IsGrounded;
+		Quaternion m_RotationTransform;
 
 		sf::CircleShape m_Shadow;
 

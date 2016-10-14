@@ -91,3 +91,41 @@ sf::Vector3f rotate(const sf::Vector3f& p, const sf::Vector3f& axis, float angle
     Quaternion pRot = q * Quaternion(p.x, p.y, p.z) * ~q;
     return {pRot.x, pRot.y, pRot.z};
 }
+
+Quaternion rotateTransform(const Quaternion& q, const sf::Vector3f& eulerAngle)
+{
+    float angle = length(eulerAngle);
+    sf::Vector3f axis = eulerAngle / angle;
+    Quaternion rot = createRotationQuaternion(axis, angle);
+    return rot * q;
+}
+
+sf::Vector3f quatRotToPYR(const Quaternion& r)
+{
+    sf::Vector3f pyr;
+    pyr.x = radiansToDegrees(atan2(2.f * (r.x * r.r + r.y * r.z), r.r * r.r - r.x * r.x - r.y * r.y + r.z * r.z));
+    pyr.y = radiansToDegrees(asin(2.f * (r.r * r.y - r.x * r.z)));
+    pyr.z = radiansToDegrees(atan2(2.f * (r.x * r.y + r.r * r.z), r.r * r.r + r.x * r.x - r.y * r.y - r.z * r.z));
+
+    if(pyr.x < 0.f)
+        pyr.x += 360.f;
+
+    if(pyr.y < 0.f)
+        pyr.y += 360.f;
+
+    if(pyr.z < 0.f)
+        pyr.z += 360.f;
+
+    return pyr;
+}
+
+sf::Vector3f rotate(const sf::Vector3f& p, const Quaternion& q)
+{
+    Quaternion pRot = q * Quaternion(p.x, p.y, p.z) * ~q;
+    return {pRot.x, pRot.y, pRot.z};
+}
+
+float radiansToDegrees(float radians)
+{
+    return radians * (180.f / PI);
+}
