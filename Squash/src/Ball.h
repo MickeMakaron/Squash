@@ -4,6 +4,7 @@
 #define BALL_H
 
 #include "SceneObject.h"
+#include "Quaternion.h"
 
 class Ball : public SceneObject
 {
@@ -36,6 +37,7 @@ class Ball : public SceneObject
         sf::Vector3f m_AngularVelocity;
 		sf::Vector3f m_Rotation;
 		bool m_IsGrounded;
+		Quaternion m_RotationTransform;
 
 		const unsigned int BALL_TILE_SIZE = 64U;
 		const float BALL_ANIM_INCREMENT = 45.f / 2.f;
