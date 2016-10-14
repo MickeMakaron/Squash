@@ -27,6 +27,12 @@ sf::Vector2f isometricProjection(const sf::Vector3f& v);
 
 Quaternion createRotationQuaternion(const sf::Vector3f& axis, float angle);
 sf::Vector3f rotate(const sf::Vector3f& p, const sf::Vector3f& axis, float angle);
+sf::Vector3f rotate(const sf::Vector3f& p, const Quaternion& q);
+Quaternion rotateTransform(const Quaternion& q, const sf::Vector3f& eulerAngle);
+sf::Vector3f quatRotToPYR(const Quaternion& r);
+
+float radiansToDegrees(float radians);
+
 
 
 #endif //COMMON_MATH
