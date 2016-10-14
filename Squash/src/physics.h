@@ -6,7 +6,7 @@
 class Ball;
 class ScenePlane;
 
-void applyMagnusForce(Ball& ball);
+void applyMagnusForce(Ball& ball, float dt);
 
 bool handleContact(Ball& ball, const ScenePlane& plane, float dt);
 

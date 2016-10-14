@@ -47,11 +47,11 @@ Game::Game()
 
 	m_Tile.setPosition({0, 0, 0});
 	m_Player.setPosition({0, 0, 0});
-	m_Ball.setPosition({0, 0, 0.5f});
+	m_Ball.setPosition({0, 0, 2.f});
 
 	m_Ball.setMass(1.f);
-	m_Ball.accelerate({10.f, 10.f, 0.f});
-	m_Ball.accelerateAngular({0.f, 0.f, 20.f});
+	m_Ball.accelerate({0.f, 0.f, 0.f});
+	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
 		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
@@ -193,10 +193,10 @@ void Game::update(float dt)
 
 
     ScenePlane plane({0.f, 0.f, 1.f}, 0);
-    ScenePlane wallFront({0.f, -1.f, 0.f}, -0.5f);
-    ScenePlane wallLeft({1.f, 0.f, 0.f}, -0.5f);
-    ScenePlane wallRight({-1.f, 0.f, 0.f}, -0.5f);
-    ScenePlane wallBack({0.f, 1.f, 0.f}, -0.5f);
+    ScenePlane wallFront({0.f, -1.f, 0.f}, -1.0f);
+    ScenePlane wallLeft({1.f, 0.f, 0.f}, -1.0f);
+    ScenePlane wallRight({-1.f, 0.f, 0.f}, -1.0f);
+    ScenePlane wallBack({0.f, 1.f, 0.f}, -1.f);
     plane.setMass(0.f);
     wallFront.setMass(0.f);
     wallLeft.setMass(0.f);
@@ -214,7 +214,7 @@ void Game::update(float dt)
 
 		if(!m_Ball.isGrounded()) m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
 
-		applyMagnusForce(m_Ball);
+		applyMagnusForce(m_Ball, dt);
 		// Most contact and collision related code is available in handleCollision2 now
         if(handleCollision2(m_Ball, plane, dt))
         {

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-void applyMagnusForce(Ball& ball)
+void applyMagnusForce(Ball& ball, float dt)
 {
     static const float AIR_DENSITY = 1.21f;
 
@@ -14,7 +14,7 @@ void applyMagnusForce(Ball& ball)
     const sf::Vector3f FORCE_DIRECTION = cross(-ball.getVelocity(), ball.getAngularVelocity());
 
     const sf::Vector3f ACCELERATION = FORCE_MAGNITUDE * FORCE_DIRECTION  / ball.getMass();
-    ball.accelerate(ACCELERATION);
+    ball.accelerate(ACCELERATION * dt);
 }
 
 bool handleContact(Ball& ball, const ScenePlane& plane, float dt)
