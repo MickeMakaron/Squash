@@ -1,4 +1,5 @@
 ﻿#include "Ball.h"
+#include <SFML/Graphics/RenderTarget.hpp>
 #include "CommonMath.h"
 
 
@@ -11,6 +12,11 @@ Ball::Ball(float radius)
 , m_RotationTransform(createRotationQuaternion({0.f, 0.f, 1.f}, 0))
 {
 	m_Sprite.setOrigin(BALL_TILE_SIZE / 2, BALL_TILE_SIZE / 2);
+
+	m_Shadow.setRadius(BALL_TILE_SIZE / 2);
+	m_Shadow.setOrigin(BALL_TILE_SIZE / 2, BALL_TILE_SIZE / 2);
+	m_Shadow.setScale(1.f, 0.5f);
+	m_Shadow.setFillColor(sf::Color(0, 0, 0, 100));
 }
 
 
@@ -51,6 +57,27 @@ void Ball::accelerateAngular(sf::Vector3f angularAcceleration)
 sf::Vector3f Ball::getAngularVelocity() const
 {
     return m_AngularVelocity;
+}
+
+void Ball::move(const sf::Vector3f& delta)
+{
+	SceneObject::move(delta);
+
+	sf::Vector3f shadowPos = this->getPosition();
+	shadowPos.z = 0;
+	m_Shadow.setPosition(isometricProjection(shadowPos));
+}
+
+void Ball::move(float dt)
+{
+	SceneObject::move(dt);
+}
+
+void Ball::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(m_Shadow);
+
+	SceneObject::draw(target, states);
 }
 
 void Ball::resetOrigin()

@@ -23,7 +23,7 @@ Game::Game()
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
-    , m_Ball(20.f)
+    , m_Ball(13.f)
 {
     using namespace Constants;
 	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
@@ -52,6 +52,10 @@ Game::Game()
 	m_Ball.setMass(100.f);
 	m_Ball.accelerate({0.f, 1.f, 0.f});
 	m_Ball.accelerateAngular({0.f, -0.1f, 0.f});
+
+	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
+		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
+		m_Ball.getAngularVelocity().x << ", " << m_Ball.getAngularVelocity().y << ", " << m_Ball.getAngularVelocity().z << ")" << std::endl;
 }
 
 Game::~Game()
@@ -194,7 +198,7 @@ void Game::update(float dt)
     wall.setMass(0.f);
 
 
-    if(m_Ball.isGrounded())
+    if(m_Ball.isGrounded())// && false)
     {
         handleContact(m_Ball, plane, dt);
     }
