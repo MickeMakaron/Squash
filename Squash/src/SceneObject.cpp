@@ -44,7 +44,7 @@ void SceneObject::move(const sf::Vector3f& delta)
 
 void SceneObject::move(float dt)
 {
-    move(m_Velocity * dt);
+    move(m_Velocity * dt * 60.f);
 }
 
 void SceneObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
