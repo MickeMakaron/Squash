@@ -11,9 +11,9 @@ void applyMagnusForce(Ball& ball)
     static const float AIR_DENSITY = 1.21f;
 
     const float FORCE_MAGNITUDE = 0.5f * AIR_DENSITY * pow(ball.getRadius(), 3) * PI;
-    const sf::Vector3f FORCE_DIRECTION = cross(ball.getVelocity(), ball.getAngularVelocity());
+    const sf::Vector3f FORCE_DIRECTION = cross(-ball.getVelocity(), ball.getAngularVelocity());
 
-    const sf::Vector3f ACCELERATION = -FORCE_MAGNITUDE * FORCE_DIRECTION  / ball.getMass();
+    const sf::Vector3f ACCELERATION = FORCE_MAGNITUDE * FORCE_DIRECTION  / ball.getMass();
     ball.accelerate(ACCELERATION);
 }
 
