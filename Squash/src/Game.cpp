@@ -23,7 +23,7 @@ Game::Game()
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
-    , m_Ball(13.f)
+    , m_Ball(13.f / (Constants::TILE_SIZE))
 {
     using namespace Constants;
 	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
@@ -45,13 +45,13 @@ Game::Game()
 	m_BallTexture->loadFromFile("./res/Ball_SpriteSheet.png");
 	m_Ball.setTexture(m_BallTexture);
 
-	m_Tile.setPosition({0 * TILE_SIZE, 0, 0});
+	m_Tile.setPosition({0, 0, 0});
 	m_Player.setPosition({0, 0, 0});
-	m_Ball.setPosition({0, -60, 40.f});
+	m_Ball.setPosition({0, 0, 0.5f});
 
-	m_Ball.setMass(100.f);
-	m_Ball.accelerate({0.f, 100.f, 0.f});
-	m_Ball.accelerateAngular({0.f, -5.f, 0.f});
+	m_Ball.setMass(1.f);
+	m_Ball.accelerate({0.f, 0.5f, 0.f});
+	m_Ball.accelerateAngular({0.f, -10.f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
 		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
@@ -205,17 +205,19 @@ void Game::update(float dt)
     else
     {
         float ballPreviousSpeedZ = std::fabs(m_Ball.getVelocity().z);
-        m_Ball.accelerate({0.f, 0.f, -9.82f * 20.f * dt});
+        
+		if(!m_Ball.isGrounded()) m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
 
-        if(handleCollision(m_Ball, plane))
+		// Most contact and collision related code is available in handleCollision2 now
+        if(handleCollision2(m_Ball, plane, dt))
         {
-            float ballSpeedZ = std::fabs(m_Ball.getVelocity().z);
-            std::cout << "dZ: " << ballSpeedZ - ballPreviousSpeedZ << std::endl;
-            if(std::fabs(ballSpeedZ - ballPreviousSpeedZ) < 2.f)
-            {
-                m_Ball.setGrounded(true);
-                m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z});
-            }
+            //float ballSpeedZ = std::fabs(m_Ball.getVelocity().z);
+            //std::cout << "dZ: " << ballSpeedZ - ballPreviousSpeedZ << std::endl;
+            //if(std::fabs(ballSpeedZ - ballPreviousSpeedZ) < 2.f)
+            //{
+            //    m_Ball.setGrounded(true);
+            //    m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z});
+            //}
         }
 //        isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
 //        if(isBallRolling)
