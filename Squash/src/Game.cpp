@@ -50,8 +50,8 @@ Game::Game()
 	m_Ball.setPosition({0, 0, 0.5f});
 
 	m_Ball.setMass(1.f);
-	m_Ball.accelerate({0.f, 0.5f, 0.f});
-	m_Ball.accelerateAngular({0.f, -5.f, 0.f});
+	m_Ball.accelerate({0.f, 1.f, 0.f});
+	m_Ball.accelerateAngular({0.f, 0.f, 10.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
 		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
@@ -205,9 +205,10 @@ void Game::update(float dt)
     else
     {
         float ballPreviousSpeedZ = std::fabs(m_Ball.getVelocity().z);
-        
+
 		if(!m_Ball.isGrounded()) m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
 
+		applyMagnusForce(m_Ball);
 		// Most contact and collision related code is available in handleCollision2 now
         if(handleCollision2(m_Ball, plane, dt))
         {
