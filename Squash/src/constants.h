@@ -5,7 +5,7 @@
 
 namespace Constants
 {
-    const float TILE_SIZE = 60.f;
+	const float TILE_SIZE = 185.5f / sqrtf(2.f);//60.f;
     const unsigned int WINDOW_WIDTH = 1280;
     const unsigned int WINDOW_HEIGHT = 720;
     const char* const WINDOW_TITLE = "SQWOOOSH!";
