@@ -252,7 +252,7 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 					resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
 			}
 
-			resultingVelocity = vectorFriction * delta_vel_n;
+			resultingVelocity = lineOfAction * delta_vel_p + vectorFriction * delta_vel_n;
 
 			ball.accelerate(resultingVelocity);
 			ball.accelerateAngular(resultingAngularVelocity);
