@@ -49,7 +49,7 @@ Game::Game()
 	m_Player.setPosition({0, 0, 0});
 	m_Ball.setPosition({0, 0, 2.f});
 
-	m_Ball.setMass(1.f);
+	m_Ball.setMass(0.05f);
 	m_Ball.accelerate({0.f, 0.f, 0.f});
 //	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
@@ -184,11 +184,13 @@ void Game::update(float dt)
 	if(K::isKeyPressed(K::S))
 		direction += DOWN;
 
-    if(length(direction) > 0.f)
-    {
-        direction = normalize(direction);
-        m_Player.move(direction * SPEED);
-    }
+    direction = normalize(direction);
+    m_Player.move(direction * SPEED);
+
+    static sf::Vector3f currentPlayerDirection(0.f, 0.f, 1.f);
+
+    if(length2(direction) > 0.f)
+        currentPlayerDirection = direction;
 
 
 
@@ -212,9 +214,20 @@ void Game::update(float dt)
     applyMagnusForce(m_Ball, dt);
     // Most contact and collision related code is available in handleCollision2 now
 
+    static unsigned int numConsecutiveFloorHits = 0;
+
+    if(handleCollision2(m_Ball, floor, dt))
+    {
+        numConsecutiveFloorHits++;
+    }
+
+    if(numConsecutiveFloorHits > 1)
+        std::cout << "Point lost. Send help." << std::endl;
+
     if(K::isKeyPressed(K::Space))
     {
-        sf::Vector3f racquetDirection(0.f, 0.5f, 1.f);
+//        sf::Vector3f racquetDirection(0.f, 0.5f, 1.f);
+        sf::Vector3f racquetDirection = rotate(currentPlayerDirection, cross(currentPlayerDirection, {0.f, 0.f, 1.f}), PI / 6.f);
     //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     //		racquetDirection = sf::Vector3f(0.f, 0.2f, 1.f);
     //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
@@ -225,17 +238,23 @@ void Game::update(float dt)
     //        racquetDirection = sf::Vector3f(0.2f, 0.f, 1.f);
 
         racquetDirection = normalize(racquetDirection);
-        ScenePlane racquet(racquetDirection, dot(m_Player.getPosition(), racquetDirection));
+        float racquetZ = 0.1f;
+        ScenePlane racquet(racquetDirection, dot(m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ), racquetDirection));
         racquet.setMass(0.1f);
         racquet.accelerate({0.f, 0.f, 10.f});
-        handleCollision2(m_Ball, racquet, dt);
+
+        sf::Vector3f racquetCenter = m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ);
+        float racquetRadius = 0.02f;
+        if(handleCollision2(m_Ball, racquet, racquetCenter, racquetRadius, dt))
+            numConsecutiveFloorHits = 0;
     }
 
-
-    handleCollision2(m_Ball, floor, dt);
-
     for(const ScenePlane& w : walls)
-        handleCollision2(m_Ball, w, dt);
+    {
+        if(handleCollision2(m_Ball, w, dt))
+            numConsecutiveFloorHits = 0;
+    }
+
 
 
     m_Ball.move(dt);
