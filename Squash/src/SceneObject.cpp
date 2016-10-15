@@ -45,6 +45,7 @@ void SceneObject::move(const sf::Vector3f& delta)
 void SceneObject::move(float dt)
 {
     move(m_Velocity * dt);
+	m_PreviousVelocity = m_Velocity;
 }
 
 void SceneObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -61,6 +62,11 @@ void SceneObject::accelerate(const sf::Vector3f& acc)
 const sf::Vector3f& SceneObject::getVelocity() const
 {
     return m_Velocity;
+}
+
+const sf::Vector3f& SceneObject::getPreviousVelocity() const
+{
+	return m_PreviousVelocity;
 }
 
 void SceneObject::setSize(float width, float height)

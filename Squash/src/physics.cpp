@@ -145,6 +145,7 @@ float calcDeltaSpeed_LineOfAction(float m1, float m2, float v1, float v2, float 
 float calcDeltaSpeed_LineOfAction(float v, float e)
 {
 	return -e*v - v;
+	// u = -e * v
 }
 
 float calcDeltaSpeed_Friction_NoRoll(float v_n, float u_p, float v_p, float friction)
@@ -187,17 +188,31 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, const sf::Vector3f& p
 
 bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 {
-	static const float COLLISION_FACTOR = 0.6f;
-	static const float FRICTION_FACTOR = 0.1f;
-	static const float FRICTION_FACTOR_ROLL = 0.05f;
+	static const float COLLISION_FACTOR = 0.76f;
+	static const float FRICTION_FACTOR = 0.11f;
+	static const float FRICTION_FACTOR_ROLL = 0.056f;
 
 	float distance = dot(ball.getPosition(), plane.getNormal()) - plane.getD();
 
 	// If close enough, COLLIDE!
 	if(std::fabs(distance) <= ball.getRadius())
 	{
+		// Ball might have overshot the plane by a little bit, so we need to
+		// adjust speed and position to where the ball should have hit the plane.
+		float overshoot = ball.getRadius() - distance;
 
-		ball.move(plane.getNormal() * (ball.getRadius() - distance));
+		float velocityLength = length(ball.getVelocity());//dot(ball.getVelocity(), -plane.getNormal());
+		float assumedAcceleration = (velocityLength - length(ball.getPreviousVelocity())) / dt;
+		float distanceTravelledInOneStep = velocityLength * dt;
+
+		float actualTime = (distanceTravelledInOneStep - overshoot) / velocityLength;
+
+		sf::Vector3f normVel = normalize(ball.getVelocity());
+		sf::Vector3f actualVelocity = ball.getPreviousVelocity() + normalize(ball.getVelocity() - ball.getPreviousVelocity()) * assumedAcceleration * actualTime;
+
+		ball.accelerate((actualVelocity - ball.getVelocity()));
+        ball.move(-normVel * (overshoot));
+
 
 		// CP = Collision point
 		sf::Vector3f vectorCP = plane.getNormal() * (-ball.getRadius());

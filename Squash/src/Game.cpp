@@ -213,17 +213,15 @@ void Game::update(float dt)
 
 
 
-    if(!m_Ball.isGrounded()) m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
-
-    applyMagnusForce(m_Ball, dt);
+   
     // Most contact and collision related code is available in handleCollision2 now
 
     static unsigned int numConsecutiveFloorHits = 0;
 
-    if(handleCollision2(m_Ball, floor, dt))
-    {
-        numConsecutiveFloorHits++;
-    }
+    //if(handleCollision2(m_Ball, floor, dt))
+    //{
+    //    numConsecutiveFloorHits++;
+    //}
 
     if(numConsecutiveFloorHits > 1)
         std::cout << "Point lost. Send help." << std::endl;
@@ -263,8 +261,15 @@ void Game::update(float dt)
 
 
 
-    m_Ball.move(dt);
-    m_Ball.rotate(dt);
+	m_Ball.move(dt);
+	m_Ball.rotate(dt);
+
+	if (!m_Ball.isGrounded())
+	{
+		
+		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
+		applyMagnusForce(m_Ball, dt);
+	}
 
 	m_BallView.setCenter(isometricProjection(m_Ball.getPosition()));
 

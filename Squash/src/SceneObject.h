@@ -21,6 +21,7 @@ public:
 	virtual void move(float dt);
 	virtual void accelerate(const sf::Vector3f& acc);
 	virtual const sf::Vector3f& getVelocity() const;
+	virtual const sf::Vector3f& getPreviousVelocity() const;
 	void setSize(float width, float height);
 
 	void setMass(float mass);
@@ -39,6 +40,7 @@ private:
     std::shared_ptr<sf::Texture> m_Texture;
 	sf::Vector3f    m_Position;
 	sf::Vector3f    m_Velocity;
+	sf::Vector3f    m_PreviousVelocity;
 	float           m_Mass = 0.f;
 
 };
