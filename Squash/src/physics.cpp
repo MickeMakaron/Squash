@@ -173,6 +173,18 @@ float calcDeltaSpeed_Friction_WithRoll(sf::Vector3f v_plane_pre, sf::Vector3f r,
 //	return 9.f*v_n/7.f + 2.f*v_n_spin/7.f;
 //}
 
+bool handleCollision2(Ball& ball, const ScenePlane& plane, const sf::Vector3f& planeCenter, float radius, float dt)
+{
+	float normalDistance = dot(ball.getPosition(), plane.getNormal()) - plane.getD();
+	sf::Vector3f ballPlaneProjection = ball.getPosition() - plane.getNormal() * normalDistance;
+	sf::Vector3f tangentDistanceVector = ballPlaneProjection - planeCenter;
+
+	if(length(tangentDistanceVector) <= ball.getRadius() + radius)
+        return handleCollision2(ball, plane, dt);
+
+    return false;
+}
+
 bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 {
 	static const float COLLISION_FACTOR = 0.6f;
