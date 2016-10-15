@@ -24,15 +24,19 @@ Game::Game()
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
     , m_Ball(13.f / (Constants::TILE_SIZE))
+	, m_Stage()
 {
     using namespace Constants;
 	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
 
+	m_BallView.setCenter({ 0, 0 });
+	m_BallView.setSize({ static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT) });
 	m_Window.setView(sf::View({0, 0}, {static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT)}));
 
 	m_Shape.setFillColor(sf::Color::Red);
 	m_Shape.setPosition(-float(WINDOW_WIDTH) / 2.f, 0.f);
 
+	m_Stage.loadStageFromFile("stage01.txt");
 
 	if (!m_TestTexture->loadFromFile("./res/FloorTest1.png"))
 		std::cout << "Failed to load texture" << std::endl;
@@ -249,16 +253,20 @@ void Game::update(float dt)
             numConsecutiveFloorHits = 0;
     }
 
-    for(const ScenePlane& w : walls)
-    {
-        if(handleCollision2(m_Ball, w, dt))
-            numConsecutiveFloorHits = 0;
-    }
+	m_Stage.collideWithStage(m_Ball, dt);
+
+    //for(const ScenePlane& w : walls)
+    //{
+    //    if(handleCollision2(m_Ball, w, dt))
+    //        numConsecutiveFloorHits = 0;
+    //}
 
 
 
     m_Ball.move(dt);
     m_Ball.rotate(dt);
+
+	m_BallView.setCenter(isometricProjection(m_Ball.getPosition()));
 
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 //		m_Ball.rotate({ 0.05f,0,0 });
@@ -280,12 +288,14 @@ void Game::draw()
 	// Should be replaced with actual text on the screen.
 	m_Window.setTitle(std::string(Constants::WINDOW_TITLE) + " | fps: " + std::to_string(m_Framerate));
 
+	m_Window.setView(m_BallView);
 	// No draw calls before this.
 	m_Window.clear();
 
 	m_Window.draw(m_Shape);
 
-	m_Window.draw(m_Tile);
+	//m_Window.draw(m_Tile);
+	m_Window.draw(m_Stage);
 
 	m_Window.draw(m_Ball);
 	m_Window.draw(m_Player);

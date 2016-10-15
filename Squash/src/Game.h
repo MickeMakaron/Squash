@@ -12,6 +12,7 @@
 #include "Ball.h"
 
 #include <memory>
+#include "Stage.h"
 
 class Game
 {
@@ -33,12 +34,16 @@ private:
 
 	sf::CircleShape		m_Shape;	// A temporary test shape
 
+	sf::View			m_BallView;
+
 	std::shared_ptr<sf::Texture>    m_TestTexture;
 	std::shared_ptr<sf::Texture>    m_PlayerTexture;
 	std::shared_ptr<sf::Texture>    m_BallTexture;
 	Tile				            m_Tile;
 	Player                          m_Player;
-	Ball                     m_Ball;
+	Ball							m_Ball;
+
+	Stage m_Stage;
 
 };
 
