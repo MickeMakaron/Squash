@@ -51,7 +51,7 @@ Game::Game()
 
 	m_Ball.setMass(1.f);
 	m_Ball.accelerate({0.f, 0.f, 0.f});
-	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
+//	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
 		m_Ball.getVelocity().x << ", " << m_Ball.getVelocity().y << ", " << m_Ball.getVelocity().z << ")\nRot: (" <<
@@ -171,7 +171,7 @@ void Game::update(float dt)
     static const sf::Vector3f UP(-1.f, 1.f, 0.f);
     static const sf::Vector3f RIGHT(1.f, 1.f, 0.f);
     static const sf::Vector3f LEFT(-1.f, -1.f, 0.f);
-    static const float SPEED = 1.f;
+    static const float SPEED = 2.f * dt;
     sf::Vector3f direction(0.f, 0.f, 0.f);
 
     typedef sf::Keyboard K;
@@ -192,54 +192,52 @@ void Game::update(float dt)
 
 
 
-    ScenePlane plane({0.f, 0.f, 1.f}, 0);
-    ScenePlane wallFront({0.f, -1.f, 0.f}, -1.0f);
-    ScenePlane wallLeft({1.f, 0.f, 0.f}, -1.0f);
-    ScenePlane wallRight({-1.f, 0.f, 0.f}, -1.0f);
-    ScenePlane wallBack({0.f, 1.f, 0.f}, -1.f);
-    plane.setMass(0.f);
-    wallFront.setMass(0.f);
-    wallLeft.setMass(0.f);
-    wallRight.setMass(0.f);
-    wallBack.setMass(0.f);
-
-
-    if(m_Ball.isGrounded() && false)
+    ScenePlane floor({0.f, 0.f, 1.f}, 0);
+    std::vector<ScenePlane> walls =
     {
-        handleContact(m_Ball, plane, dt);
-    }
-    else
+        ScenePlane({0.f, -1.f, 0.f}, -1.0f),
+        ScenePlane({1.f, 0.f, 0.f}, -1.0f),
+        ScenePlane({-1.f, 0.f, 0.f}, -1.0f),
+        ScenePlane({0.f, 1.f, 0.f}, -1.f)
+    };
+
+    floor.setMass(0.f);
+    for(ScenePlane& w : walls)
+        w.setMass(0.f);
+
+
+
+    if(!m_Ball.isGrounded()) m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
+
+    applyMagnusForce(m_Ball, dt);
+    // Most contact and collision related code is available in handleCollision2 now
+
+    if(K::isKeyPressed(K::Space))
     {
-        float ballPreviousSpeedZ = std::fabs(m_Ball.getVelocity().z);
+        sf::Vector3f racquetDirection(0.f, 0.5f, 1.f);
+    //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    //		racquetDirection = sf::Vector3f(0.f, 0.2f, 1.f);
+    //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    //		racquetDirection = sf::Vector3f(0.f, -0.2, 1.f);
+    //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    //		racquetDirection = sf::Vector3f(-0.2f, 0.f, 1.f);
+    //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    //        racquetDirection = sf::Vector3f(0.2f, 0.f, 1.f);
 
-		if(!m_Ball.isGrounded()) m_Ball.accelerate({0.f, 0.f, -9.82f * dt});
-
-		applyMagnusForce(m_Ball, dt);
-		// Most contact and collision related code is available in handleCollision2 now
-        if(handleCollision2(m_Ball, plane, dt))
-        {
-            //float ballSpeedZ = std::fabs(m_Ball.getVelocity().z);
-            //std::cout << "dZ: " << ballSpeedZ - ballPreviousSpeedZ << std::endl;
-            //if(std::fabs(ballSpeedZ - ballPreviousSpeedZ) < 2.f)
-            //{
-            //    m_Ball.setGrounded(true);
-            //    m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z});
-            //}
-        }
-
-        handleCollision2(m_Ball, wallBack, dt);
-        handleCollision2(m_Ball, wallFront, dt);
-        handleCollision2(m_Ball, wallLeft, dt);
-        handleCollision2(m_Ball, wallRight, dt);
-//        isBallRolling = std::fabs(m_Ball.getVelocity().z) < 10.f;
-//        if(isBallRolling)
-//            m_Ball.accelerate({0.f, 0.f, -m_Ball.getVelocity().z});
+        racquetDirection = normalize(racquetDirection);
+        ScenePlane racquet(racquetDirection, dot(m_Player.getPosition(), racquetDirection));
+        racquet.setMass(0.1f);
+        racquet.accelerate({0.f, 0.f, 10.f});
+        handleCollision2(m_Ball, racquet, dt);
     }
-//    else //if(!isBallRolling)
 
 
+    handleCollision2(m_Ball, floor, dt);
 
-//    handleCollision(m_Ball, wall);
+    for(const ScenePlane& w : walls)
+        handleCollision2(m_Ball, w, dt);
+
+
     m_Ball.move(dt);
     m_Ball.rotate(dt);
 
@@ -255,20 +253,6 @@ void Game::update(float dt)
 //		m_Ball.rotate({ 0,0,-0.05f });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 //		m_Ball.rotate({ 0,0,0.05f });
-
-
-//    float ballZ = m_Ball.getPosition().z - m_Ball.getRadius();
-//    if(ballZ < 0.f)
-//    {
-//        m_Ball.move({0, 0, -ballZ});
-//        m_Ball.accelerate({0, 0, -m_Ball.getVelocity().z * 1.5f});
-//    }
-//    m_Player.accelerate({0.f, 0.f, -1.f * SPEED});
-//    m_Player.move(dt);
-
-	/*
-		Insert updates here
-	*/
 }
 
 void Game::draw()
@@ -285,7 +269,7 @@ void Game::draw()
 	m_Window.draw(m_Tile);
 
 	m_Window.draw(m_Ball);
-	//m_Window.draw(m_Player);
+	m_Window.draw(m_Player);
 
 
 	/*
