@@ -53,7 +53,7 @@ Game::Game()
 	m_Player.setPosition({0, 0, 0});
 	m_Ball.setPosition({0, 0, 2.f});
 
-	m_Ball.setMass(0.05f);
+	m_Ball.setMass(0.024f);
 	m_Ball.accelerate({0.f, 0.f, 0.f});
 //	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
@@ -213,7 +213,7 @@ void Game::update(float dt)
 
 
 
-   
+
     // Most contact and collision related code is available in handleCollision2 now
 
     static unsigned int numConsecutiveFloorHits = 0;
@@ -229,7 +229,7 @@ void Game::update(float dt)
     if(K::isKeyPressed(K::Space))
     {
 //        sf::Vector3f racquetDirection(0.f, 0.5f, 1.f);
-        sf::Vector3f racquetDirection = rotate(currentPlayerDirection, cross(currentPlayerDirection, {0.f, 0.f, 1.f}), PI / 6.f);
+        sf::Vector3f racquetDirection = rotate(currentPlayerDirection, cross(currentPlayerDirection, {0.f, 0.f, 1.f}), PI / 3.f);
     //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     //		racquetDirection = sf::Vector3f(0.f, 0.2f, 1.f);
     //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
@@ -243,10 +243,10 @@ void Game::update(float dt)
         float racquetZ = 0.1f;
         ScenePlane racquet(racquetDirection, dot(m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ), racquetDirection));
         racquet.setMass(0.1f);
-        racquet.accelerate({0.f, 0.f, 10.f});
+        racquet.accelerate({0.f, 0.f, 5.f});
 
         sf::Vector3f racquetCenter = m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ);
-        float racquetRadius = 0.02f;
+        float racquetRadius = 0.1f;
         if(handleCollision2(m_Ball, racquet, racquetCenter, racquetRadius, dt))
             numConsecutiveFloorHits = 0;
     }
@@ -266,7 +266,7 @@ void Game::update(float dt)
 
 	if (!m_Ball.isGrounded())
 	{
-		
+
 		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
 		applyMagnusForce(m_Ball, dt);
 	}
