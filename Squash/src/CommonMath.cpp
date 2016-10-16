@@ -97,7 +97,7 @@ Quaternion rotateTransform(const Quaternion& q, const sf::Vector3f& eulerAngle)
     float angle = length(eulerAngle);
     sf::Vector3f axis = eulerAngle / angle;
 
-    if(axis.x != axis.x)
+    if(!std::isfinite(axis.x))
         return q;
 
     Quaternion rot = createRotationQuaternion(axis, angle);

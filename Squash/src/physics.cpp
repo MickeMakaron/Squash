@@ -188,33 +188,34 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, const sf::Vector3f& p
 
 bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 {
-	static const float COLLISION_FACTOR = 0.6f;
+	static const float COLLISION_FACTOR = 0.76f;
 	static const float FRICTION_FACTOR = 0.11f;
 	static const float FRICTION_FACTOR_ROLL = 0.056f;
 
 	float distance = dot(ball.getPosition(), plane.getNormal()) - plane.getD();
 
 	// If close enough, COLLIDE!
-	if(std::fabs(distance) <= ball.getRadius())// && dot(ball.getVelocity() - plane.getVelocity(), plane.getNormal()) < 0.f)
+	if(std::fabs(distance) <= ball.getRadius())
 	{
 		// Ball might have overshot the plane by a little bit, so we need to
 		// adjust speed and position to where the ball should have hit the plane.
 		float overshoot = ball.getRadius() - distance;
 
-		//float velocityLength = length(ball.getVelocity());//dot(ball.getVelocity(), -plane.getNormal());
-		//if(velocityLength > 0.f)
-		//{
-		//	float assumedAcceleration = (velocityLength - length(ball.getPreviousVelocity())) / dt;
-		//	float distanceTravelledInOneStep = velocityLength * dt;
+		float velocityLength = length(ball.getVelocity());//dot(ball.getVelocity(), -plane.getNormal());
+		float assumedAcceleration = (velocityLength - length(ball.getPreviousVelocity())) / dt;
+		float distanceTravelledInOneStep = velocityLength * dt;
 
-		//	float actualTime = (distanceTravelledInOneStep - overshoot) / velocityLength;
+		float actualTime = (distanceTravelledInOneStep - overshoot) / velocityLength;
+		if(!std::isfinite(actualTime))
+            actualTime = 0.f;
 
-		//	sf::Vector3f actualVelocity = ball.getPreviousVelocity() + normalize(ball.getVelocity() - ball.getPreviousVelocity()) * assumedAcceleration * actualTime;
 
-		//	ball.accelerate((actualVelocity - ball.getVelocity()));
-		//}
+
 		sf::Vector3f normVel = normalize(ball.getVelocity());
-		ball.move(plane.getNormal() * (overshoot));
+		sf::Vector3f actualVelocity = ball.getPreviousVelocity() + normalize(ball.getVelocity() - ball.getPreviousVelocity()) * assumedAcceleration * actualTime;
+
+		ball.accelerate((actualVelocity - ball.getVelocity()));
+        ball.move(-normVel * (overshoot));
 
 
 		// CP = Collision point
@@ -266,9 +267,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 				delta_vel_n = FRICTION_FACTOR * 9.82f * dt;
 				resultingAngularVelocity = cross(vectorFriction, lineOfAction) * 5.f * FRICTION_FACTOR * 9.82f / (2 * ball.getRadius()) * dt;
 
+				#ifdef DEBUG_OUTPUT
+
 				std::cout << "-----------\nCONTACT NO ROLL!\nVel: (" <<
 					resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 					resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+				#endif // DEBUG_OUTPUT
 			}
 			// Otherwise, start rolling!
 			else
@@ -288,9 +293,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 					resultingAngularVelocity = cross(vectorFriction, lineOfAction) * delta_vel_n / ball.getRadius() * dt;
 				}
 
+				#ifdef DEBUG_OUTPUT
+
 				std::cout << "-----------\nCONTACT ROLL!\nVel: (" <<
 					resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 					resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+				#endif // DEBUG_OUTPUT
 			}
 
 			resultingVelocity = lineOfAction * delta_vel_p + vectorFriction * delta_vel_n;
@@ -324,9 +333,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 			//if(length2(vectorFriction) >= 0.01)
 				resultingAngularVelocity = 5.f * FRICTION_FACTOR * (delta_vel_p) / (2.f * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
 
+            #ifdef DEBUG_OUTPUT
+
 			std::cout << "-----------\nNO ROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+            #endif // DEBUG_OUTPUT
 		}
 		else
 		{
@@ -338,9 +351,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 			//resultingAngularVelocity = (delta_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction));
 			resultingAngularVelocity = cross(vectorFriction, lineOfAction) * (delta_vel_n_Roll) / ball.getRadius();
 
+			#ifdef DEBUG_OUTPUT
+
 			std::cout << "-----------\nROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+			#endif // DEBUG_OUTPUT
 		}
 
 
