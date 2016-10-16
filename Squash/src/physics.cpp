@@ -267,9 +267,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 				delta_vel_n = FRICTION_FACTOR * 9.82f * dt;
 				resultingAngularVelocity = cross(vectorFriction, lineOfAction) * 5.f * FRICTION_FACTOR * 9.82f / (2 * ball.getRadius()) * dt;
 
+				#ifdef DEBUG_OUTPUT
+
 				std::cout << "-----------\nCONTACT NO ROLL!\nVel: (" <<
 					resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 					resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+				#endif // DEBUG_OUTPUT
 			}
 			// Otherwise, start rolling!
 			else
@@ -289,9 +293,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 					resultingAngularVelocity = cross(vectorFriction, lineOfAction) * delta_vel_n / ball.getRadius() * dt;
 				}
 
+				#ifdef DEBUG_OUTPUT
+
 				std::cout << "-----------\nCONTACT ROLL!\nVel: (" <<
 					resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 					resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+				#endif // DEBUG_OUTPUT
 			}
 
 			resultingVelocity = lineOfAction * delta_vel_p + vectorFriction * delta_vel_n;
@@ -325,9 +333,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 			//if(length2(vectorFriction) >= 0.01)
 				resultingAngularVelocity = 5.f * FRICTION_FACTOR * (delta_vel_p) / (2.f * ball.getRadius()) * cross(-lineOfAction, vectorFriction);
 
+            #ifdef DEBUG_OUTPUT
+
 			std::cout << "-----------\nNO ROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+            #endif // DEBUG_OUTPUT
 		}
 		else
 		{
@@ -339,9 +351,13 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 			//resultingAngularVelocity = (delta_vel_n_Roll) / ball.getRadius() * normalize(cross(resultingVelocity, -lineOfAction));
 			resultingAngularVelocity = cross(vectorFriction, lineOfAction) * (delta_vel_n_Roll) / ball.getRadius();
 
+			#ifdef DEBUG_OUTPUT
+
 			std::cout << "-----------\nROLL!\nVel: (" <<
 				resultingVelocity.x << ", " << resultingVelocity.y << ", " << resultingVelocity.z << ")\nRot: (" <<
 				resultingAngularVelocity.x << ", " << resultingAngularVelocity.y << ", " << resultingAngularVelocity.z << ")" << std::endl;
+
+			#endif // DEBUG_OUTPUT
 		}
 
 
