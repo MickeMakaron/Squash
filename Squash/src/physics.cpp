@@ -206,6 +206,10 @@ bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt)
 		float distanceTravelledInOneStep = velocityLength * dt;
 
 		float actualTime = (distanceTravelledInOneStep - overshoot) / velocityLength;
+		if(!std::isfinite(actualTime))
+            actualTime = 0.f;
+
+
 
 		sf::Vector3f normVel = normalize(ball.getVelocity());
 		sf::Vector3f actualVelocity = ball.getPreviousVelocity() + normalize(ball.getVelocity() - ball.getPreviousVelocity()) * assumedAcceleration * actualTime;
