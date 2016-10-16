@@ -3,6 +3,7 @@
 #include <fstream>
 #include "constants.h"
 #include "physics.h"
+#include "CommonMath.h"
 
 bool Stage::m_Initialized = false;
 std::map<std::string, std::shared_ptr<sf::Texture>> Stage::m_Textures;
@@ -97,14 +98,24 @@ bool Stage::loadStageFromFile(const std::string& filename)
 	return success;
 }
 
-bool Stage::collideWithStage(Ball& ball, float dt)
+int Stage::collideWithStage(Ball& ball, float dt)
 {
-	bool anyCollision = false;
+	int collision = NONE;
 	for (auto& plane : m_Planes)
 	{
-		anyCollision = handleCollision2(ball, plane, dt);
+		if(handleCollision2(ball, plane, dt))
+		{
+			if(dot(plane.getNormal(), {0,0,1}) > 0.f)
+			{
+				collision |= FLOOR;
+			}
+			else
+			{
+				collision |= WALL;
+			}
+		}
 	}
-	return anyCollision;
+	return collision;
 }
 
 void Stage::draw(sf::RenderTarget& target, sf::RenderStates states) const

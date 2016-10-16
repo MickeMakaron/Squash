@@ -251,7 +251,7 @@ void Game::update(float dt)
             numConsecutiveFloorHits = 0;
     }
 
-	m_Stage.collideWithStage(m_Ball, dt);
+	bool hitGround = m_Stage.collideWithStage(m_Ball, dt) & Stage::FLOOR;
 
     //for(const ScenePlane& w : walls)
     //{
@@ -266,8 +266,8 @@ void Game::update(float dt)
 
 	if (!m_Ball.isGrounded())
 	{
-		
-		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
+		if(!hitGround)
+			m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
 		applyMagnusForce(m_Ball, dt);
 	}
 
