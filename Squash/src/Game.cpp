@@ -24,7 +24,7 @@ Game::Game()
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
-    , m_Ball(13.f / (Constants::TILE_SIZE))
+    , m_Ball(0.02f/*13.f / (Constants::TILE_SIZE)*/)
 	, m_Stage()
 {
     using namespace Constants;
