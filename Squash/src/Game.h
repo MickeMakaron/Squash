@@ -36,12 +36,12 @@ private:
 
 	sf::View			m_BallView;
 
-	std::shared_ptr<sf::Texture>    m_TestTexture;
-	std::shared_ptr<sf::Texture>    m_PlayerTexture;
-	std::shared_ptr<sf::Texture>    m_BallTexture;
 	Tile				            m_Tile;
 	Player                          m_Player;
 	Ball							m_Ball;
+	std::shared_ptr<sf::Texture>    m_TestTexture;
+	std::shared_ptr<sf::Texture>    m_PlayerTexture;
+	std::shared_ptr<sf::Texture>    m_BallTexture;
 
 	Stage m_Stage;
 
