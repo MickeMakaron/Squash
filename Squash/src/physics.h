@@ -12,6 +12,7 @@ class Ball;
 class ScenePlane;
 
 void applyMagnusForce(Ball& ball, float dt);
+void applyDragForce(Ball& ball, float dt);
 
 void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& dt, std::vector<size_t>& collidingPlaneIndices);
 

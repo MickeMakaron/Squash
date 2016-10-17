@@ -55,7 +55,7 @@ Game::Game()
 	m_Ball.setPosition({0, 0, 2.f});
 
 	m_Ball.setMass(0.024f);
-//	m_Ball.accelerate({0.f, 99999.f, 0.f});
+	m_Ball.accelerate({0.f, 99.f, 0.f});
 //	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
@@ -231,6 +231,7 @@ void Game::update(float dt)
 
 		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
 		applyMagnusForce(m_Ball, ballDt);
+		applyDragForce(m_Ball, ballDt);
 	}
 
 	m_BallView.setCenter(isometricProjection(m_Ball.getPosition()));

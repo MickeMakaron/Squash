@@ -19,6 +19,15 @@ void applyMagnusForce(Ball& ball, float dt)
     ball.accelerate(ACCELERATION * dt);
 }
 
+void applyDragForce(Ball& ball, float dt)
+{
+    static const float DRAG_CONSTANT = 0.4f;
+    static const float AIR_DENSITY = 1.21;
+
+    float magnitude = 0.5f * DRAG_CONSTANT * AIR_DENSITY * pow(ball.getRadius(), 2) * PI * length2(ball.getVelocity()) / ball.getMass();
+    ball.accelerate(-normalize(ball.getVelocity()) * magnitude * dt);
+}
+
 float calcDeltaSpeed_LineOfAction(float m1, float m2, float v1, float v2, float e)
 {
 	return (m1 - e*m2) * v1 / (m1 + m2) + (1 + e)*m2 * v2 / (m1 + m2) - v1;
@@ -92,6 +101,8 @@ bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float dt, flo
 }
 
 
+
+
 void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& dt, std::vector<size_t>& collidingPlaneIndices)
 {
     float minTimeUntilCollision = std::numeric_limits<float>::max();
@@ -124,6 +135,7 @@ void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& 
     ball.move(minTimeUntilCollision);
     ball.rotate(minTimeUntilCollision);
     applyMagnusForce(ball, minTimeUntilCollision);
+    applyDragForce(ball, minTimeUntilCollision);
     dt -= minTimeUntilCollision;
 
     for(size_t i : planeIndices)
