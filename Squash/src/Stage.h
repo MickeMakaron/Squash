@@ -19,7 +19,7 @@ public:
 
 	bool loadStageFromFile(const std::string& filename);
 
-	bool collideWithStage(Ball& ball, float dt);
+	bool collideWithStage(Ball& ball, float& dt);
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

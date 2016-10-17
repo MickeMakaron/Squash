@@ -5,18 +5,18 @@
 
 #include "SFML/System/Vector3.hpp"
 
+#include <vector>
+#include <cstring>
+
 class Ball;
 class ScenePlane;
 
 void applyMagnusForce(Ball& ball, float dt);
 
-bool handleContact(Ball& ball, const ScenePlane& plane, float dt);
+void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& dt, std::vector<size_t>& collidingPlaneIndices);
 
-bool handleCollision(Ball& ball, const ScenePlane& plane);
+bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float& timeUntilCollision);
 
-
-
-bool handleCollision2(Ball& ball, const ScenePlane& plane, const sf::Vector3f& planeCenter, float radius, float dt);
-bool handleCollision2(Ball& ball, const ScenePlane& plane, float dt);
+bool handleCollision(Ball& ball, const ScenePlane& plane, float& dt);
 
 #endif //PHYSICS_H

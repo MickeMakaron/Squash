@@ -21,10 +21,10 @@ Game::Game()
 	, m_Framerate(60.f)
 	, m_Shape(20.f)
 	, m_Tile()
+    , m_Ball(13.f / (Constants::TILE_SIZE))
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
-    , m_Ball(13.f / (Constants::TILE_SIZE))
 	, m_Stage()
 {
     using namespace Constants;
@@ -55,7 +55,7 @@ Game::Game()
 	m_Ball.setPosition({0, 0, 2.f});
 
 	m_Ball.setMass(0.024f);
-	m_Ball.accelerate({0.f, 0.f, 0.f});
+//	m_Ball.accelerate({0.f, 99999.f, 0.f});
 //	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
@@ -136,7 +136,8 @@ void Game::handleEvents()
 			if (event.key.code == sf::Keyboard::P)
 				paused = !paused;
 			break;
-
+        default:
+            break;
 		}
 
 	}
@@ -149,7 +150,6 @@ void Game::update(float dt)
 
 	// Temporary : Just for testing vvvvv
 	static bool moveRight = true;
-	static bool isBallRolling = false;
 
 	if (moveRight)
 		m_Shape.move(150.f * dt, 0.f);
@@ -202,75 +202,35 @@ void Game::update(float dt)
     if(numConsecutiveFloorHits > 1)
         std::cout << "Point lost. Send help." << std::endl;
 
-    sf::Vector3f ballPosBackup = m_Ball.getPosition();
-    sf::Vector3f ballVelocityBackup = m_Ball.getVelocity();
-    sf::Vector3f ballAngularVelocityBackup = m_Ball.getAngularVelocity();
-    bool hasCollisionOccured = false;
-
-    auto handlePhysics = [&]()
+    float ballDt = dt;
+    if(K::isKeyPressed(K::Space))
     {
+        float racquetZ = 0.1f;
 
-        if(K::isKeyPressed(K::Space))
+        if(length(m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ) - m_Ball.getPosition()) <= m_Ball.getRadius() * 10.f)
         {
             sf::Vector3f racquetDirection = rotate(currentPlayerDirection, cross(currentPlayerDirection, {0.f, 0.f, 1.f}), PI / 3.f);
-
-            racquetDirection = normalize(racquetDirection);
-            float racquetZ = 0.1f;
-            ScenePlane racquet(racquetDirection, dot(m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ), racquetDirection));
+            ScenePlane racquet(normalize(racquetDirection), 0);
             racquet.setMass(0.1f);
             racquet.accelerate({0.f, 0.f, 5.f});
 
-            sf::Vector3f racquetCenter = m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ);
-            float racquetRadius = 0.1f;
-            if(handleCollision2(m_Ball, racquet, racquetCenter, racquetRadius, dt))
+            if(handleCollision(m_Ball, racquet, ballDt))
             {
                 numConsecutiveFloorHits = 0;
-                hasCollisionOccured = true;
-            }
-        }
-
-        if(m_Stage.collideWithStage(m_Ball, dt))
-        {
-            hasCollisionOccured = true;
-        }
-    };
-
-    m_Ball.move(dt);
-
-    handlePhysics();
-
-    if(hasCollisionOccured)
-    {
-        sf::Vector3f d = m_Ball.getPosition() - ballPosBackup;
-
-        m_Ball.setPosition(ballPosBackup);
-        m_Ball.accelerateAngular(ballAngularVelocityBackup - m_Ball.getAngularVelocity());
-        m_Ball.accelerate(ballVelocityBackup - m_Ball.getVelocity());
-
-        float t = length(d) / length(m_Ball.getVelocity());
-        if(std::isfinite(t))
-        {
-            if(t <= dt)
-            {
-                m_Ball.move(t);
-                handlePhysics();
-                m_Ball.move(dt - t);
-            }
-            else
-            {
-                handlePhysics();
-                m_Ball.move(dt);
             }
         }
     }
 
-	m_Ball.rotate(dt);
+    m_Stage.collideWithStage(m_Ball, ballDt);
 
-	if (!m_Ball.isGrounded())
+    m_Ball.move(ballDt);
+	m_Ball.rotate(ballDt);
+
+//	if (!m_Ball.isGrounded())
 	{
 
 		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
-		applyMagnusForce(m_Ball, dt);
+		applyMagnusForce(m_Ball, ballDt);
 	}
 
 	m_BallView.setCenter(isometricProjection(m_Ball.getPosition()));
