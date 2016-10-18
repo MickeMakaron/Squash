@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <iomanip>
 #define DEBUG_OUTPUT
 
 void applyMagnusForce(Ball& ball, float dt)
@@ -48,18 +49,19 @@ float calcDeltaSpeed_Friction_WithRoll(sf::Vector3f v_plane_pre, sf::Vector3f r,
 	return (2.f / 7.f) * length(v_plane_pre - cross(r, w_pre));
 }
 
-bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float dt, float& timeUntilCollision)
+bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float dt, sf::Vector3f& distanceVector, float& timeUntilCollision)
 {
     float ballSpeedLoa = dot(ball.getVelocity(), plane.getNormal());
 
     float distanceTravelledLoa = ballSpeedLoa * dt;
 
-	sf::Vector3f posA = ball.getPosition();
-	float distanceA = dot(posA, plane.getNormal()) - plane.getD();
+	sf::Vector3f posA(ball.getPosition());
+	float distanceA = dot(posA, sf::Vector3f(plane.getNormal())) - plane.getD();
 
 	if(std::fabs(distanceA) < ball.getRadius())
     {
         timeUntilCollision = -(ball.getRadius() - std::fabs(distanceA)) / std::fabs(ballSpeedLoa);
+
         if(std::isfinite(timeUntilCollision))
         {
             if(timeUntilCollision > dt)
@@ -67,11 +69,13 @@ bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float dt, flo
         }
         else
             return false;
+        distanceVector = ball.getVelocity() * timeUntilCollision * ((ball.getRadius() - std::fabs(distanceA)) / std::fabs(distanceTravelledLoa));
         return true;
     }
 
-    sf::Vector3f posB = ball.getPosition() + ball.getVelocity() * dt;
-    float distanceB = dot(posB, plane.getNormal()) - plane.getD();
+
+    sf::Vector3f posB = sf::Vector3f(ball.getPosition()) + sf::Vector3f(ball.getVelocity()) * dt;
+    float distanceB = dot(posB, sf::Vector3f(plane.getNormal())) - plane.getD();
     float intersectionDepth = 0.f;
     if(distanceA < 0.f)
     {
@@ -97,6 +101,7 @@ bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float dt, flo
     else
         return false;
 
+    distanceVector = ball.getVelocity() * timeUntilCollision * ((std::fabs(distanceTravelledLoa) - intersectionDepth) / std::fabs(distanceTravelledLoa));
     return true;
 }
 
@@ -107,22 +112,30 @@ void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& 
 {
     float minTimeUntilCollision = std::numeric_limits<float>::max();
     std::vector<size_t> planeIndices;
+    std::vector<sf::Vector3f> distanceVectors;
     for(size_t i = 0; i < planes.size(); i++)
     {
         float timeUntilCollision;
-        if(findCollisionPoint(ball, planes[i], dt, timeUntilCollision))
+        sf::Vector3f distanceVector;
+        if(findCollisionPoint(ball, planes[i], dt, distanceVector, timeUntilCollision))
+            int flerp = 0;
+        if(findCollisionPoint(ball, planes[i], dt, distanceVector, timeUntilCollision))
         {
             float d = minTimeUntilCollision - timeUntilCollision;
             if(std::fabs(d) < 0.00001f)
             {
                 minTimeUntilCollision = std::min(minTimeUntilCollision, timeUntilCollision);
                 planeIndices.push_back(i);
+                distanceVectors.push_back(distanceVector);
             }
             else if(timeUntilCollision < minTimeUntilCollision)
             {
                 minTimeUntilCollision = timeUntilCollision;
                 planeIndices.clear();
+                distanceVectors.clear();
                 planeIndices.push_back(i);
+                distanceVectors.push_back(distanceVector);
+
             }
         }
     }
@@ -132,7 +145,9 @@ void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& 
 
     assert(minTimeUntilCollision <= dt);
 
-    ball.move(minTimeUntilCollision);
+//    ball.move(sf::Vector3f(sf::Vector3<float>(ball.getVelocity()) * minTimeUntilCollision));
+//    ball.move(minTimeUntilCollision);
+    ball.move(distanceVectors.front());
     ball.rotate(minTimeUntilCollision);
     applyMagnusForce(ball, minTimeUntilCollision);
     applyDragForce(ball, minTimeUntilCollision);
@@ -213,7 +228,7 @@ bool handleCollision(Ball& ball, const ScenePlane& plane, float& dt)
 			delta_vel_p = -pre_vel_p;
 			ball.setGrounded(true);
 
-			sf::Vector3f v = ball.getVelocity() + plane.getNormal() * float(fabs(pre_vel_p));
+			sf::Vector3f v = ball.getVelocity() + plane.getNormal() * std::fabs(pre_vel_p);
 			sf::Vector3f r = -plane.getNormal() * ball.getRadius();
 			float slideTime = (2.f/7.f)*length(v - cross(r, ball.getAngularVelocity())) / (FRICTION_FACTOR * 9.82f);
 
@@ -276,7 +291,7 @@ bool handleCollision(Ball& ball, const ScenePlane& plane, float& dt)
 		// We must compare the resulting speed of both Roll and No Roll conditions
 		// to find which gives the smallest result (which is the one we want)
 		float delta_vel_n_NoRoll = calcDeltaSpeed_Friction_NoRoll(pre_vel_n, delta_vel_p, pre_vel_p, FRICTION_FACTOR);
-		float delta_vel_n_Roll	 = calcDeltaSpeed_Friction_WithRoll(ball.getVelocity() + plane.getNormal() * float(fabs(pre_vel_p)), -plane.getNormal() * ball.getRadius(), ball.getAngularVelocity(), vectorFriction);
+		float delta_vel_n_Roll	 = calcDeltaSpeed_Friction_WithRoll(ball.getVelocity() + plane.getNormal() * std::fabs(pre_vel_p), -plane.getNormal() * ball.getRadius(), ball.getAngularVelocity(), vectorFriction);
 		//float post_vel_n_NoRoll = calcExitSpeed_Friction_NoRoll(pre_vel_n, post_vel_p, pre_vel_p, FRICTION_FACTOR);
 		//float post_vel_n_Roll	= calcExitSpeed_Friction_WithRoll(ball.getVelocity() + plane.getNormal() * fabs(pre_vel_p), -plane.getNormal() * ball.getRadius(), ball.getAngularVelocity(), vectorFriction);
 

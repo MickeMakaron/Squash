@@ -16,7 +16,7 @@ void applyDragForce(Ball& ball, float dt);
 
 void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& dt, std::vector<size_t>& collidingPlaneIndices);
 
-bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float& timeUntilCollision);
+bool findCollisionPoint(const Ball& ball, const ScenePlane& plane, float dt, sf::Vector3f& distanceVector, float& timeUntilCollision);
 
 bool handleCollision(Ball& ball, const ScenePlane& plane, float& dt);
 
