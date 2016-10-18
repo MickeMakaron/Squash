@@ -7,6 +7,7 @@
 #include "Quaternion.h"
 
 #include <SFML/Graphics/CircleShape.hpp>
+#include "ForceArrow.h"
 
 class Ball : public SceneObject
 {
@@ -15,6 +16,7 @@ class Ball : public SceneObject
         float getRadius() const;
 
         void setTexture(const std::shared_ptr<sf::Texture>& texture) override;
+        void setArrowTexture(const std::shared_ptr<sf::Texture>& texture);
 
 		void update();
 		void rotate(float dt);
@@ -29,6 +31,9 @@ class Ball : public SceneObject
 
 		void move(const sf::Vector3f& delta) override;
 		void move(float dt) override;
+
+		void addForceVector(sf::Vector3f vector, sf::Color color = {255,255,255,255});
+		void clearAllForceVectors();
 
 protected:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -46,6 +51,9 @@ protected:
 		Quaternion m_RotationTransform;
 
 		sf::CircleShape m_Shadow;
+
+		std::shared_ptr<sf::Texture> m_ArrowTexture;
+		std::vector<ForceArrow> m_ForceArrows;
 
 		const unsigned int BALL_TILE_SIZE = 64U;
 		const float BALL_ANIM_INCREMENT = 45.f / 2.f;

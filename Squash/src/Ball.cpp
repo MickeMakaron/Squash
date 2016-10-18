@@ -32,6 +32,11 @@ void Ball::setTexture(const std::shared_ptr<sf::Texture>& texture)
 	update();
 }
 
+void Ball::setArrowTexture(const std::shared_ptr<sf::Texture>& texture)
+{
+	m_ArrowTexture = texture;
+}
+
 void Ball::update()
 {
 	m_Sprite.setTextureRect(calcSpriteFrame());
@@ -73,11 +78,32 @@ void Ball::move(float dt)
 	SceneObject::move(dt);
 }
 
+void Ball::addForceVector(sf::Vector3f vector, sf::Color color)
+{
+	ForceArrow a(color);
+	if (a.setVector(vector))
+	{
+		a.setTexture(m_ArrowTexture);
+		a.setPosition(getPosition());
+		m_ForceArrows.push_back(a);
+	}
+}
+
+void Ball::clearAllForceVectors()
+{
+	m_ForceArrows.clear();
+}
+
 void Ball::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_Shadow);
 
 	SceneObject::draw(target, states);
+
+	for (auto& arrow : m_ForceArrows)
+	{
+		target.draw(arrow, states);
+	}
 }
 
 void Ball::resetOrigin()

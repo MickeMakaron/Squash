@@ -18,6 +18,8 @@ void applyMagnusForce(Ball& ball, float dt)
 
     const sf::Vector3f ACCELERATION = FORCE_MAGNITUDE * FORCE_DIRECTION  / ball.getMass();
     ball.accelerate(ACCELERATION * dt);
+
+	ball.addForceVector(FORCE_DIRECTION, { 0,0,255 });
 }
 
 void applyDragForce(Ball& ball, float dt)
@@ -25,8 +27,10 @@ void applyDragForce(Ball& ball, float dt)
     static const float DRAG_CONSTANT = 0.4f;
     static const float AIR_DENSITY = 1.21;
 
-    float magnitude = 0.5f * DRAG_CONSTANT * AIR_DENSITY * pow(ball.getRadius(), 2) * PI * length2(ball.getVelocity()) / ball.getMass();
+    float magnitude = 0.5f * DRAG_CONSTANT * AIR_DENSITY * pow(ball.getRadius(), 2) * PI * length2(ball.getVelocity()) / ball.getMass(); 
     ball.accelerate(-normalize(ball.getVelocity()) * magnitude * dt);
+
+	ball.addForceVector(-ball.getVelocity(), { 255,0,0 });
 }
 
 float calcDeltaSpeed_LineOfAction(float m1, float m2, float v1, float v2, float e)
@@ -281,6 +285,9 @@ bool handleCollision(Ball& ball, const ScenePlane& plane, float& dt)
 
 			ball.accelerate(resultingVelocity);
 			ball.accelerateAngular(resultingAngularVelocity);
+
+			ball.addForceVector(resultingVelocity, sf::Color(255, 0, 255));
+			ball.addForceVector(vectorFriction, sf::Color(0, 255, 0));
 			return true;
 		}
 		else
@@ -339,6 +346,8 @@ bool handleCollision(Ball& ball, const ScenePlane& plane, float& dt)
 		ball.accelerate(resultingVelocity);
 		ball.accelerateAngular(resultingAngularVelocity);
 
+		ball.addForceVector(resultingVelocity, sf::Color(255, 0, 255));
+		ball.addForceVector(vectorFriction, sf::Color(0, 255, 0));
 		return true;
 	}
 

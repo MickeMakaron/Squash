@@ -13,7 +13,7 @@ public:
 	void setTexture(const std::shared_ptr<sf::Texture>& texture) override;
 
 	void setColor(sf::Color color);
-	void setVector(sf::Vector3f vec);
+	bool setVector(sf::Vector3f vec);
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -28,6 +28,7 @@ private:
 
 	const unsigned int ARROW_TILE_SIZE = 128;
 	const float ARROW_ANIM_INCREMENT = 45.f / 2.f;
+
 };
 
 

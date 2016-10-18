@@ -54,6 +54,7 @@ Game::Game()
 
 	m_ArrowTexture->loadFromFile("./res/Arrow_SpriteSheet.png");
 	m_ArrowTest.setTexture(m_ArrowTexture);
+	m_Ball.setArrowTexture((m_ArrowTexture));
 
 	m_Tile.setPosition({0, 0, 0});
 	m_Player.setPosition({0, 0, 0});
@@ -153,6 +154,7 @@ void Game::update(float dt)
 	if (paused)
 		return;
 
+
 	// Temporary : Just for testing vvvvv
 	static bool moveRight = true;
 
@@ -207,6 +209,8 @@ void Game::update(float dt)
     if(numConsecutiveFloorHits > 1)
         std::cout << "Point lost. Send help." << std::endl;
 
+	m_Ball.clearAllForceVectors();
+
     float ballDt = dt;
     if(K::isKeyPressed(K::Space))
     {
@@ -236,6 +240,7 @@ void Game::update(float dt)
 	{
 
 		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
+		m_Ball.addForceVector({ 0,0,-1 }, sf::Color(255, 255, 0));
 		applyMagnusForce(m_Ball, ballDt);
 		applyDragForce(m_Ball, ballDt);
 	}
@@ -277,7 +282,7 @@ void Game::draw()
 	m_Window.draw(m_Ball);
 	m_Window.draw(m_Player);
 
-	m_Window.draw(m_ArrowTest);
+	//m_Window.draw(m_ArrowTest);
 
 	/*
 		Insert draw calls here

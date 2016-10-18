@@ -3,7 +3,7 @@
 
 ForceArrow::ForceArrow(sf::Color color)
 	: SceneObject()
-	, m_Direction(normalize({0,1,0}))
+	, m_Direction(normalize({0,-1,0}))
 {
 	m_Sprite.setColor(color);
 	update();
@@ -24,13 +24,15 @@ void ForceArrow::setColor(sf::Color color)
 	m_Sprite.setColor(color);
 }
 
-void ForceArrow::setVector(sf::Vector3f vec)
+bool ForceArrow::setVector(sf::Vector3f vec)
 {
 	if(length2(vec) > 0.f)
 	{
 		m_Direction = normalize(vec);
 		update();
+		return true;
 	}
+	return false;
 }
 
 void ForceArrow::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -58,7 +60,7 @@ sf::IntRect ForceArrow::calcSpriteFrame() const
 
 	if(m_Direction.y <= 0.f)
 	{
-		rotation.z = 2 * PI - rotation.z;
+		rotation.z = 360 - rotation.z;
 	}
 
 	int pitch_index = static_cast<int>(roundf(static_cast<float>(rotation.z) / ARROW_ANIM_INCREMENT));
