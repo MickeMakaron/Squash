@@ -42,7 +42,7 @@ bool Stage::loadStageFromFile(const std::string& filename)
 
 		int lineIndex = 0;
 		std::string line;
-		
+
 		// Consume the \n to get to the next line with actual data.
 		getline(inFile, line);
 
@@ -66,8 +66,8 @@ bool Stage::loadStageFromFile(const std::string& filename)
 					break;
 				}
 				tile.setPosition({
-					2.f * static_cast<float>(i - width / 2), 
-					2.f * static_cast<float>(-(lineIndex - height / 2)), 
+					2.f * static_cast<float>(i - width / 2),
+					2.f * static_cast<float>(-(lineIndex - height / 2)),
 					0.f});
 
 				m_Tiles.back().push_back(tile);
@@ -76,9 +76,9 @@ bool Stage::loadStageFromFile(const std::string& filename)
 		}
 		m_RenderTexture.clear();
 		m_RenderTexture.create(
-			(width + height) * Constants::MAX_TILE_WIDTH / 2, 
+			(width + height) * Constants::MAX_TILE_WIDTH / 2,
 			(width + height - 1) * Constants::MIN_TILE_HEIGHT + Constants::MAX_TILE_HEIGHT);
-		
+
 		m_RenderTexture.setView(sf::View(sf::Vector2f(0.f, 0.f), sf::Vector2f(m_RenderTexture.getTexture().getSize().x, m_RenderTexture.getTexture().getSize().y)));
 
 		for (auto& row : m_Tiles)
@@ -98,24 +98,11 @@ bool Stage::loadStageFromFile(const std::string& filename)
 	return success;
 }
 
-int Stage::collideWithStage(Ball& ball, float dt)
+bool Stage::collideWithStage(Ball& ball, float& dt)
 {
-	int collision = NONE;
-	for (auto& plane : m_Planes)
-	{
-		if(handleCollision2(ball, plane, dt))
-		{
-			if(dot(plane.getNormal(), {0,0,1}) > 0.f)
-			{
-				collision |= FLOOR;
-			}
-			else
-			{
-				collision |= WALL;
-			}
-		}
-	}
-	return collision;
+	std::vector<size_t> collidingPlaneIndices;
+	handleCollisions(ball, m_Planes, dt, collidingPlaneIndices);
+	return !collidingPlaneIndices.empty();
 }
 
 void Stage::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -6,8 +6,8 @@
 Ball::Ball(float radius)
 : SceneObject()
 , m_Radius(radius)
-, m_Rotation(0.f, 0.f, 0.f)
 , m_AngularVelocity(0.f, 0.f, 0.f)
+, m_Rotation(0.f, 0.f, 0.f)
 , m_IsGrounded(false)
 , m_RotationTransform(createRotationQuaternion({0.f, 0.f, 1.f}, 0))
 {

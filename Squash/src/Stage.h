@@ -18,17 +18,8 @@ public:
 	~Stage();
 
 	bool loadStageFromFile(const std::string& filename);
-	
-	enum CollisionType
-	{
-		NONE = 0,
-		WALL = 1,
-		FLOOR = 2,
-		BOTH = 3,
-	};
-	int collideWithStage(Ball& ball, float dt);
 
-	
+	bool collideWithStage(Ball& ball, float& dt);
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
