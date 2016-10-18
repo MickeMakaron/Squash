@@ -13,6 +13,7 @@
 
 #include <memory>
 #include "Stage.h"
+#include "ForceArrow.h"
 
 class Game
 {
@@ -39,9 +40,11 @@ private:
 	std::shared_ptr<sf::Texture>    m_TestTexture;
 	std::shared_ptr<sf::Texture>    m_PlayerTexture;
 	std::shared_ptr<sf::Texture>    m_BallTexture;
+	std::shared_ptr<sf::Texture>    m_ArrowTexture;
 	Tile				            m_Tile;
 	Player                          m_Player;
 	Ball							m_Ball;
+	ForceArrow						m_ArrowTest;
 
 	Stage m_Stage;
 

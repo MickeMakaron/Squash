@@ -24,8 +24,10 @@ Game::Game()
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
-    , m_Ball(0.02f/*13.f / (Constants::TILE_SIZE)*/)
+	, m_ArrowTexture(new sf::Texture())
+	, m_Ball(0.15f/*13.f / (Constants::TILE_SIZE)*/)
 	, m_Stage()
+	, m_ArrowTest(sf::Color(255,0,0))
 {
     using namespace Constants;
 	m_Window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "TITLE", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
@@ -49,6 +51,9 @@ Game::Game()
 
 	m_BallTexture->loadFromFile("./res/Ball_SpriteSheet.png");
 	m_Ball.setTexture(m_BallTexture);
+
+	m_ArrowTexture->loadFromFile("./res/Arrow_SpriteSheet.png");
+	m_ArrowTest.setTexture(m_ArrowTexture);
 
 	m_Tile.setPosition({0, 0, 0});
 	m_Player.setPosition({0, 0, 0});
@@ -275,6 +280,9 @@ void Game::update(float dt)
 
 	m_BallView.setCenter(isometricProjection(m_Ball.getPosition()));
 
+	m_ArrowTest.setPosition(m_Ball.getPosition());
+	m_ArrowTest.setVector(normalize(m_Ball.getVelocity()));
+
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 //		m_Ball.rotate({ 0.05f,0,0 });
 //	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
@@ -301,12 +309,13 @@ void Game::draw()
 
 	m_Window.draw(m_Shape);
 
-	//m_Window.draw(m_Tile);
+	m_Window.draw(m_Tile);
 	m_Window.draw(m_Stage);
 
 	m_Window.draw(m_Ball);
 	m_Window.draw(m_Player);
 
+	m_Window.draw(m_ArrowTest);
 
 	/*
 		Insert draw calls here
