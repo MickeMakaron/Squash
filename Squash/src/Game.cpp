@@ -21,7 +21,7 @@ Game::Game()
 	, m_Framerate(60.f)
 	, m_Shape(20.f)
 	, m_Tile()
-    , m_Ball(13.f / (Constants::TILE_SIZE))
+    , m_Ball(0.02f)
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
@@ -55,7 +55,7 @@ Game::Game()
 	m_Ball.setPosition({0, 0, 2.f});
 
 	m_Ball.setMass(0.024f);
-	m_Ball.accelerate({0.f, 99.f, 0.f});
+	m_Ball.accelerate({0.f, 9999.f, 0.f});
 //	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
 	std::cout << "-----------\nBALL STARTING CONDITIONS!\nVel: (" <<
@@ -207,7 +207,8 @@ void Game::update(float dt)
     {
         float racquetZ = 0.1f;
 
-        if(length(m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ) - m_Ball.getPosition()) <= m_Ball.getRadius() * 10.f)
+        float hitBoxRadius = 1.f;
+        if(length(m_Player.getPosition() + sf::Vector3f(0.f, 0.f, racquetZ) - m_Ball.getPosition()) <= hitBoxRadius + m_Ball.getRadius())
         {
             sf::Vector3f racquetDirection = rotate(currentPlayerDirection, cross(currentPlayerDirection, {0.f, 0.f, 1.f}), PI / 3.f);
             ScenePlane racquet(normalize(racquetDirection), 0);
