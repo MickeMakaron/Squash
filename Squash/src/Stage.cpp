@@ -1,6 +1,7 @@
 ﻿#include "Stage.h"
 
 #include <fstream>
+#include <cassert>
 #include "constants.h"
 #include "physics.h"
 #include "CommonMath.h"
@@ -56,9 +57,11 @@ bool Stage::loadStageFromFile(const std::string& filename)
 				{
 				case 'F':
 					tile.setTexture(getTexture("FloorTest1"));
+					tile.setType(Tile::Type::FLOOR);
 					break;
 				case 'W':
 					tile.setTexture(getTexture("WallTest1"));
+					tile.setType(Tile::Type::WALL);
 					break;
 				case 'w':
 					//Invisible walls
@@ -98,11 +101,20 @@ bool Stage::loadStageFromFile(const std::string& filename)
 	return success;
 }
 
-bool Stage::collideWithStage(Ball& ball, float& dt)
+std::vector<Tile::Type> Stage::collideWithStage(Ball& ball, float& dt)
 {
 	std::vector<size_t> collidingPlaneIndices;
 	handleCollisions(ball, m_Planes, dt, collidingPlaneIndices);
-	return !collidingPlaneIndices.empty();
+	assert(m_Planes[0].getNormal() == sf::Vector3f(0.f, 0.f, 1.f) && m_Planes[0].getD() == 0.f);
+
+	std::vector<Tile::Type> collidingPlaneTypes(collidingPlaneIndices.size());
+	for(size_t i = 0; i < collidingPlaneIndices.size(); i++)
+        if(collidingPlaneIndices[i] == 0) // If floor
+            collidingPlaneTypes[i] = Tile::Type::FLOOR;
+        else
+            collidingPlaneTypes[i] = Tile::Type::WALL;
+
+    return collidingPlaneTypes;
 }
 
 void Stage::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -136,4 +148,46 @@ void Stage::loadTexture(const std::string& filename)
 std::shared_ptr<sf::Texture> Stage::getTexture(const std::string& filename)
 {
 	return m_Textures.at(filename);
+}
+
+sf::Vector3f Stage::containPoint(const sf::Vector3f& p) const
+{
+    float dMinSqrd = std::numeric_limits<float>::max();
+    sf::Vector3f containedPoint = p;
+    for(const std::vector<Tile>& row : m_Tiles)
+        for(const Tile& tile : row)
+        {
+            if(tile.getType() == Tile::Type::FLOOR)
+            {
+                float dSqrd = length2(p - tile.getPosition());
+                if(dSqrd < dMinSqrd)
+                {
+                    static const float HALF_TILE_SIZE_SQRD = pow(2.f / 2.f, 2.f);
+                    if(dSqrd < HALF_TILE_SIZE_SQRD)
+                    {
+                        return p;
+                    }
+                    dMinSqrd = dSqrd;
+                    containedPoint = p;
+
+                    static const float HALF_TILE_SIZE = 2.f / 2.f;
+                    sf::Vector3f center = tile.getPosition();
+                    float left = center.x - HALF_TILE_SIZE;
+                    float right = center.x + HALF_TILE_SIZE;
+                    float top = center.y + HALF_TILE_SIZE;
+                    float bot = center.y - HALF_TILE_SIZE;
+
+                    if(p.x < left)
+                        containedPoint.x = left;
+                    else if(p.x > right)
+                        containedPoint.x = right;
+                    if(p.y < bot)
+                        containedPoint.y = bot;
+                    else if(p.y > top)
+                        containedPoint.y = top;
+                }
+            }
+        }
+
+    return containedPoint;
 }

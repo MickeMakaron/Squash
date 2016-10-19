@@ -19,7 +19,8 @@ public:
 
 	bool loadStageFromFile(const std::string& filename);
 
-	bool collideWithStage(Ball& ball, float& dt);
+	std::vector<Tile::Type> collideWithStage(Ball& ball, float& dt);
+    sf::Vector3f containPoint(const sf::Vector3f& p) const;
 
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
