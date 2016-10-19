@@ -17,6 +17,7 @@ class Ball : public SceneObject
 
         void setTexture(const std::shared_ptr<sf::Texture>& texture) override;
         void setArrowTexture(const std::shared_ptr<sf::Texture>& texture);
+		void setRadius(float radius);
 
 		void update();
 		void rotate(float dt);

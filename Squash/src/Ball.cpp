@@ -1,6 +1,7 @@
 ﻿#include "Ball.h"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include "CommonMath.h"
+#include "constants.h"
 
 
 Ball::Ball(float radius)
@@ -13,10 +14,13 @@ Ball::Ball(float radius)
 {
 	m_Sprite.setOrigin(BALL_TILE_SIZE / 2, BALL_TILE_SIZE / 2);
 
+	update();
+
 	m_Shadow.setRadius(BALL_TILE_SIZE / 2);
 	m_Shadow.setOrigin(BALL_TILE_SIZE / 2, BALL_TILE_SIZE / 2);
-	m_Shadow.setScale(1.f, 0.5f);
 	m_Shadow.setFillColor(sf::Color(0, 0, 0, 100));
+
+	setRadius(radius);
 }
 
 
@@ -35,6 +39,16 @@ void Ball::setTexture(const std::shared_ptr<sf::Texture>& texture)
 void Ball::setArrowTexture(const std::shared_ptr<sf::Texture>& texture)
 {
 	m_ArrowTexture = texture;
+}
+
+void Ball::setRadius(float radius)
+{
+	float scaleFactor = (3.f * m_Radius *  Constants::TILE_SIZE) / 26.f;
+	m_Sprite.setScale(scaleFactor, scaleFactor);
+
+	m_Shadow.setScale(scaleFactor, scaleFactor * 0.5f);
+
+	m_Radius = radius;
 }
 
 void Ball::update()
@@ -120,7 +134,7 @@ void Ball::resetOrigin()
 {
 	float x = m_Sprite.getScale().x;
 	float y = m_Sprite.getScale().y;
-	m_Sprite.setOrigin(BALL_TILE_SIZE * x / 2, BALL_TILE_SIZE * y / 2);
+	m_Sprite.setOrigin(BALL_TILE_SIZE  / 2, BALL_TILE_SIZE  / 2);
 }
 
 sf::IntRect Ball::calcSpriteFrame() const
