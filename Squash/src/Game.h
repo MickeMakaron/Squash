@@ -25,9 +25,13 @@ public:
 
 	void run();
 
-	void handleEvents();
+	void handleEvents(float dt);
 	void update(float dt);
 	void draw();
+
+private:
+    void swingRacquet(float angle, float dt);
+    void handlePlayerMovement(float dt);
 
 private:
 	sf::RenderWindow	m_Window;
@@ -36,6 +40,12 @@ private:
 	sf::CircleShape		m_Shape;	// A temporary test shape
 
 	sf::View			m_BallView;
+	sf::View            m_PlayerView;
+
+	bool                m_IsBallView = false;
+	bool                m_IsSandboxMode = true;
+	unsigned int        m_NumConsecutiveFloorHits = 0;
+	sf::Vector3f        m_CurrentPlayerDirection = sf::Vector3f(0.f, 0.f, 1.f);
 
 	std::shared_ptr<sf::Texture>    m_TestTexture;
 	std::shared_ptr<sf::Texture>    m_PlayerTexture;
