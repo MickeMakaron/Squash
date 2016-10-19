@@ -81,7 +81,7 @@ void Ball::move(float dt)
 void Ball::addForceVector(sf::Vector3f vector, sf::Color color)
 {
 	ForceArrow a(color);
-	if (a.setVector(vector))
+	if (a.setVector(vector) && m_ShowForces)
 	{
 		a.setTexture(m_ArrowTexture);
 		a.setPosition(getPosition());
@@ -92,6 +92,16 @@ void Ball::addForceVector(sf::Vector3f vector, sf::Color color)
 void Ball::clearAllForceVectors()
 {
 	m_ForceArrows.clear();
+}
+
+void Ball::showForces(bool flag)
+{
+	m_ShowForces = flag;
+}
+
+void Ball::toggleForces()
+{
+	m_ShowForces = !m_ShowForces;
 }
 
 void Ball::draw(sf::RenderTarget& target, sf::RenderStates states) const

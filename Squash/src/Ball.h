@@ -34,6 +34,8 @@ class Ball : public SceneObject
 
 		void addForceVector(sf::Vector3f vector, sf::Color color = {255,255,255,255});
 		void clearAllForceVectors();
+		void showForces(bool flag);
+		void toggleForces();
 
 protected:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -54,6 +56,7 @@ protected:
 
 		std::shared_ptr<sf::Texture> m_ArrowTexture;
 		std::vector<ForceArrow> m_ForceArrows;
+		bool m_ShowForces;
 
 		const unsigned int BALL_TILE_SIZE = 64U;
 		const float BALL_ANIM_INCREMENT = 45.f / 2.f;

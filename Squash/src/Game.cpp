@@ -167,6 +167,10 @@ void Game::handleEvents(float dt)
                         m_IsSandboxMode = !m_IsSandboxMode;
                         break;
 
+					case sf::Keyboard::K:
+						m_Ball.toggleForces();
+						break;
+
                     default:
                         break;
                 }
@@ -318,7 +322,7 @@ void Game::draw()
 	text.setString("Hello");
 	text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
 	text.setPosition(m_Window.getView().getCenter());
-	text.setColor(sf::Color::Blue);
+	//text.setColor(sf::Color::Blue);
 	m_Window.draw(text);
 
 	//m_Window.draw(m_ArrowTest);
