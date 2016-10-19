@@ -12,3 +12,12 @@ Tile::~Tile()
 {
 }
 
+void Tile::setType(Type type)
+{
+    m_Type = type;
+}
+
+Tile::Type Tile::getType() const
+{
+    return m_Type;
+}

@@ -10,10 +10,22 @@
 
 class Tile : public SceneObject
 {
-public:
-	Tile();
-	~Tile();
+    public:
+        enum class Type : unsigned char
+        {
+            WALL,
+            FLOOR,
+            INVALID
+        };
+    public:
+        Tile();
+        ~Tile();
 
+        void setType(Type type);
+        Type getType() const;
+
+    private:
+        Type m_Type = Type::INVALID;
 };
 
 #endif //TILE
