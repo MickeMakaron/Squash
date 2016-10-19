@@ -153,7 +153,10 @@ void handleCollisions(Ball& ball, const std::vector<ScenePlane>& planes, float& 
 //    ball.move(minTimeUntilCollision);
     ball.move(distanceVectors.front());
     ball.rotate(minTimeUntilCollision);
-    applyMagnusForce(ball, minTimeUntilCollision);
+
+	if(!ball.isGrounded())
+		applyMagnusForce(ball, minTimeUntilCollision);
+
     applyDragForce(ball, minTimeUntilCollision);
     dt -= minTimeUntilCollision;
 

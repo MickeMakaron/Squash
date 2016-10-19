@@ -284,7 +284,10 @@ void Game::update(float dt)
 
 		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
 		m_Ball.addForceVector({ 0,0,-1 }, sf::Color(255, 255, 0));
-		applyMagnusForce(m_Ball, ballDt);
+		
+		if(!m_Ball.isGrounded())
+			applyMagnusForce(m_Ball, ballDt);
+		
 		applyDragForce(m_Ball, ballDt);
 	}
 
