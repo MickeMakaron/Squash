@@ -43,7 +43,7 @@ void Ball::setArrowTexture(const std::shared_ptr<sf::Texture>& texture)
 
 void Ball::setRadius(float radius)
 {
-	float scaleFactor = (3.f * m_Radius *  Constants::TILE_SIZE) / 26.f;
+	float scaleFactor = (3.f * radius *  Constants::TILE_SIZE) / 26.f;
 	m_Sprite.setScale(scaleFactor, scaleFactor);
 
 	m_Shadow.setScale(scaleFactor, scaleFactor * 0.5f);
