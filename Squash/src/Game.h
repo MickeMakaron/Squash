@@ -32,6 +32,8 @@ public:
 private:
     void swingRacquet(float angle, float dt);
     void handlePlayerMovement(float dt);
+    void resetBall();
+
 
 private:
 	sf::RenderWindow	m_Window;
