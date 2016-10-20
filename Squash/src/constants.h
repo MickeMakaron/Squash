@@ -13,6 +13,11 @@ namespace Constants
     const unsigned int WINDOW_HEIGHT = 720;
     const char* const WINDOW_TITLE = "SQWOOOSH!";
     const float SECONDS_PER_FRAME = 1.f / 60.f;
+
+    const float SQUASHBALL_RADIUS = 0.02f;
+    const float SQUASHBALL_MASS = 0.024f;
+    const float FOOTBALL_RADIUS = 0.11f;
+    const float FOOTBALL_MASS = 0.425f;
 }
 
 #endif //CONSTANTS_H
