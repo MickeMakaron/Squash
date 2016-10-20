@@ -51,7 +51,7 @@ Game::Game()
 
 	m_Tile.setTexture(m_TestTexture);
 
-	m_PlayerTexture->loadFromFile("./res/pimp.png");
+	m_PlayerTexture->loadFromFile("./res/Char_SpriteSheet.png");
 	m_Player.setTexture(m_PlayerTexture);
 
 	m_BallTexture->loadFromFile("./res/Ball_SpriteSheet.png");
@@ -213,6 +213,8 @@ void Game::handleEvents(float dt)
                 break;
 		}
 
+		m_Player.handleEvents(event);
+
 	}
 }
 
@@ -317,6 +319,8 @@ void Game::update(float dt)
 
 	m_ArrowTest.setPosition(m_Ball.getPosition());
 	m_ArrowTest.setVector(normalize(m_Ball.getVelocity()));
+
+	m_Player.update();
 }
 
 void Game::draw()
@@ -337,8 +341,16 @@ void Game::draw()
 	m_Window.draw(m_Tile);
 	m_Window.draw(m_Stage);
 
-	m_Window.draw(m_Ball);
-	m_Window.draw(m_Player);
+	if(dot(m_Player.getPosition(), {1,-1,0}) > dot(m_Ball.getPosition(), {1,-1,0}))
+	{
+		m_Window.draw(m_Ball);
+		m_Window.draw(m_Player);
+	}
+	else
+	{
+		m_Window.draw(m_Player);
+		m_Window.draw(m_Ball);
+	}
 
 	sf::Text text;
 	sf::Font font;
@@ -348,7 +360,7 @@ void Game::draw()
 	text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
 	text.setPosition(m_Window.getView().getCenter());
 	//text.setColor(sf::Color::Blue);
-	m_Window.draw(text);
+	//m_Window.draw(text);
 
 	//m_Window.draw(m_ArrowTest);
 
