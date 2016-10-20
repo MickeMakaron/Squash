@@ -22,7 +22,7 @@ Game::Game()
 	, m_Framerate(60.f)
 	, m_Shape(20.f)
 	, m_Tile()
-    , m_Ball(0.02f)
+    , m_Ball(Constants::SQUASHBALL_RADIUS)
 	, m_TestTexture(new sf::Texture())
 	, m_PlayerTexture(new sf::Texture())
 	, m_BallTexture(new sf::Texture())
@@ -63,9 +63,10 @@ Game::Game()
 
 	m_Tile.setPosition({0, 0, 0});
 	m_Player.setPosition({0, 0, 0});
-	m_Ball.setPosition({0, 0, 2.f});
 
-	m_Ball.setMass(0.024f);
+	resetBall();
+
+	m_Ball.setMass(Constants::SQUASHBALL_MASS);
 //	m_Ball.accelerate({0.f, 9999.f, 0.f});
 //	m_Ball.accelerateAngular({0.f, 100.f, 0.f});
 
@@ -171,6 +172,24 @@ void Game::handleEvents(float dt)
 						m_Ball.toggleForces();
 						break;
 
+                    case sf::Keyboard::Num1:
+						m_Ball.setRadius(Constants::SQUASHBALL_RADIUS);
+						m_Ball.setMass(Constants::SQUASHBALL_MASS);
+                        resetBall();
+						break;
+
+                    case sf::Keyboard::Num2:
+						m_Ball.setRadius(Constants::FOOTBALL_RADIUS);
+						m_Ball.setMass(Constants::SQUASHBALL_MASS);
+						resetBall();
+						break;
+
+                    case sf::Keyboard::Num3:
+						m_Ball.setRadius(Constants::FOOTBALL_RADIUS);
+						m_Ball.setMass(Constants::FOOTBALL_MASS);
+						resetBall();
+						break;
+
                     default:
                         break;
                 }
@@ -247,6 +266,14 @@ void Game::handlePlayerMovement(float dt)
     }
 }
 
+void Game::resetBall()
+{
+	m_Ball.setPosition({0, 0, 2.f});
+    m_Ball.accelerate(-m_Ball.getVelocity());
+    m_Ball.accelerateAngular(-m_Ball.getAngularVelocity());
+    m_NumConsecutiveFloorHits = 0;
+}
+
 void Game::update(float dt)
 {
 	if (paused)
@@ -265,12 +292,7 @@ void Game::update(float dt)
         {
             m_NumConsecutiveFloorHits++;
             if(m_NumConsecutiveFloorHits > 1 && !m_IsSandboxMode)
-            {
-                m_Ball.accelerate(-m_Ball.getVelocity());
-                m_Ball.accelerateAngular(m_Ball.getAngularVelocity());
-                m_Ball.setPosition({0.f, 0.f, 2.f});
-                m_NumConsecutiveFloorHits = 0;
-            }
+                resetBall();
         }
         else
             m_NumConsecutiveFloorHits = 0;
@@ -284,10 +306,10 @@ void Game::update(float dt)
 
 		m_Ball.accelerate({ 0.f, 0.f, -9.82f * dt });
 		m_Ball.addForceVector({ 0,0,-1 }, sf::Color(255, 255, 0));
-		
+
 		if(!m_Ball.isGrounded())
 			applyMagnusForce(m_Ball, ballDt);
-		
+
 		applyDragForce(m_Ball, ballDt);
 	}
 
