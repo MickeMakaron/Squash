@@ -1,0 +1,24 @@
+:::::How to play::::::
+Don't let the ball hit the floor more than once consecutively.
+
+:::::Keyboard bindings:::::
+Movement:
+Up - W
+Down - S
+Left - A
+Right - D
+
+Swing racquet:
+Up swing - Space
+Forward swing - Ctrl-Space
+
+Switch ball:
+Squashball - 1
+Football-sized ball with squashball's mass - 2
+Football - 3
+
+Other:
+Toggle force vectors display - K
+Toggle between sandbox and game mode - M
+Toggle between player and ball view - B
+Pause - P
